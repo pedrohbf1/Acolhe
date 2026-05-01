@@ -1,0 +1,14 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(bun --version)",
+      "Read(//d/Programação/Pitangui Pedras/mineracaoCorrenteza/apps/backend/src/**)",
+      "Read(//d/Programação/Pitangui Pedras/mineracaoCorrenteza/apps/backend/prisma/**)",
+      "Read(//d/Programação/Pitangui Pedras/mineracaoCorrenteza/apps/frontend/src/**)",
+      "Bash(git -C \"d:/Programação/Projetos/useAcolhe/apps/api\" log --oneline -5)",
+      "Bash(git -C \"d:/Programação/Projetos/useAcolhe/apps/api\" remote -v)",
+      "Bash(git add *)",
+      "Bash(grep -E \"\\\\.env$|\\\\.env\\\\.local\")"
+    ]
+  }
+}

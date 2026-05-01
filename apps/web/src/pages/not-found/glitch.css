@@ -1,0 +1,111 @@
+.glitch-wrapper {
+  position: relative;
+  display: inline-block;
+}
+
+.glitch-text {
+  position: relative;
+  display: block;
+}
+
+.glitch-text::before,
+.glitch-text::after {
+  content: attr(data-text);
+  position: absolute;
+  inset: 0;
+  font: inherit;
+  background: inherit;
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+.glitch-text::before {
+  color: hsl(var(--primary) / 0.7);
+  -webkit-text-fill-color: hsl(var(--primary) / 0.7);
+  background: none;
+  animation: glitch-before 3.5s infinite linear;
+}
+
+.glitch-text::after {
+  color: hsl(210 100% 65% / 0.55);
+  -webkit-text-fill-color: hsl(210 100% 65% / 0.55);
+  background: none;
+  animation: glitch-after 3.5s infinite linear;
+}
+
+@keyframes glitch-before {
+  0%, 78%, 100%  { clip-path: inset(0 0 100% 0); transform: translateX(0) skewX(0deg); }
+  79%            { clip-path: inset(5%  0 68% 0); transform: translateX(-10px) skewX(-2deg); }
+  81%            { clip-path: inset(50% 0 22% 0); transform: translateX(10px)  skewX(1deg); }
+  83%            { clip-path: inset(25% 0 50% 0); transform: translateX(-7px)  skewX(-1deg); }
+  85%            { clip-path: inset(70% 0 5%  0); transform: translateX(8px)   skewX(2deg); }
+  87%            { clip-path: inset(2%  0 80% 0); transform: translateX(-8px)  skewX(0deg); }
+  89%            { clip-path: inset(40% 0 33% 0); transform: translateX(9px)   skewX(-2deg); }
+  91%            { clip-path: inset(15% 0 62% 0); transform: translateX(-9px)  skewX(1deg); }
+  93%            { clip-path: inset(60% 0 12% 0); transform: translateX(6px)   skewX(0deg); }
+  95%            { clip-path: inset(32% 0 45% 0); transform: translateX(-5px)  skewX(-1deg); }
+  97%            { clip-path: inset(80% 0 2%  0); transform: translateX(7px)   skewX(2deg); }
+}
+
+@keyframes glitch-after {
+  0%, 78%, 100%  { clip-path: inset(0 0 100% 0); transform: translateX(0) skewX(0deg); }
+  80%            { clip-path: inset(60% 0 8%  0); transform: translateX(10px)  skewX(2deg); }
+  82%            { clip-path: inset(18% 0 55% 0); transform: translateX(-10px) skewX(-1deg); }
+  84%            { clip-path: inset(72% 0 3%  0); transform: translateX(7px)   skewX(1deg); }
+  86%            { clip-path: inset(33% 0 42% 0); transform: translateX(-8px)  skewX(-2deg); }
+  88%            { clip-path: inset(3%  0 82% 0); transform: translateX(9px)   skewX(0deg); }
+  90%            { clip-path: inset(48% 0 27% 0); transform: translateX(-7px)  skewX(2deg); }
+  92%            { clip-path: inset(12% 0 70% 0); transform: translateX(8px)   skewX(-1deg); }
+  94%            { clip-path: inset(58% 0 15% 0); transform: translateX(-6px)  skewX(1deg); }
+  96%            { clip-path: inset(22% 0 60% 0); transform: translateX(5px)   skewX(0deg); }
+  98%            { clip-path: inset(75% 0 7%  0); transform: translateX(-9px)  skewX(-2deg); }
+}
+
+/* Fundo em grade de pontos */
+.dot-grid {
+  background-image: radial-gradient(circle, hsl(var(--primary) / 0.1) 1px, transparent 1px);
+  background-size: 36px 36px;
+}
+
+/* Scan lines estáticas */
+.scan-line {
+  background: repeating-linear-gradient(
+    0deg,
+    transparent,
+    transparent 3px,
+    hsl(var(--background) / 0.04) 3px,
+    hsl(var(--background) / 0.04) 4px
+  );
+}
+
+/* Linha de varredura animada */
+@keyframes sweep {
+  0%   { top: -4px;  opacity: 0; }
+  4%   { opacity: 1; }
+  96%  { opacity: 0.7; }
+  100% { top: 100%; opacity: 0; }
+}
+
+.sweep-line {
+  position: fixed;
+  left: 0;
+  right: 0;
+  height: 2px;
+  background: linear-gradient(90deg, transparent 0%, hsl(var(--primary) / 0.5) 30%, hsl(var(--primary) / 0.8) 50%, hsl(var(--primary) / 0.5) 70%, transparent 100%);
+  box-shadow: 0 0 12px 2px hsl(var(--primary) / 0.3);
+  animation: sweep 6s ease-in-out infinite;
+  animation-delay: 1.5s;
+  pointer-events: none;
+  z-index: 20;
+}
+
+/* Bolinha piscando */
+@keyframes blink {
+  0%, 100% { opacity: 1; }
+  50%      { opacity: 0; }
+}
+
+.blink {
+  animation: blink 1.2s step-start infinite;
+}
