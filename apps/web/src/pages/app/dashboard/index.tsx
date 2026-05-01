@@ -3,8 +3,8 @@ import { useAuth } from "@/hooks/useAuth";
 import {
   useActiveOrganization,
   useActivePlan,
-  useOrganizations,
 } from "@/hooks/useOrganizations";
+import { usePlanFeatures } from "@/hooks/usePlanFeatures";
 import { getPlanDisplay } from "@/lib/plans";
 import {
   ArrowRight,
@@ -13,24 +13,16 @@ import {
   Sparkles,
   Users,
 } from "lucide-react";
-import { Link, useNavigate } from "react-router-dom";
+import { Link } from "react-router-dom";
 
 export default function DashboardPage() {
   const { user } = useAuth();
-  const { data: orgs, isLoading: loadingOrgs } = useOrganizations();
   const { data: activeOrg } = useActiveOrganization();
   const planName = useActivePlan();
   const plan = getPlanDisplay(planName);
-  const navigate = useNavigate();
-
-  // Sem nenhuma organização → onboarding obrigatório
-  if (!loadingOrgs && (orgs?.length ?? 0) === 0) {
-    navigate("/onboarding", { replace: true });
-    return null;
-  }
+  const features = usePlanFeatures();
 
   const memberCount = activeOrg?.members?.length ?? 1;
-  const orgName = activeOrg?.name ?? orgs?.[0]?.name ?? "—";
   const PlanIcon = plan.icon;
 
   return (
@@ -44,25 +36,39 @@ export default function DashboardPage() {
         </p>
       </div>
 
-      <div className="grid gap-4 md:grid-cols-3">
-        <Card
-          icon={Building2}
-          label="Organização ativa"
-          value={orgName}
-          to="/configuracoes/organizacao"
-        />
-        <Card
-          icon={Users}
-          label="Membros"
-          value={String(memberCount)}
-          to="/configuracoes/membros"
-        />
+      <div
+        className={`grid gap-4 ${features.isTeamPlan ? "md:grid-cols-3" : "md:grid-cols-2"}`}
+      >
+        {features.isTeamPlan && (
+          <Card
+            icon={Building2}
+            label="Organização ativa"
+            value={activeOrg?.name ?? "—"}
+            to="/configuracoes/organizacao"
+          />
+        )}
+        {features.isTeamPlan && (
+          <Card
+            icon={Users}
+            label="Membros"
+            value={String(memberCount)}
+            to="/configuracoes/membros"
+          />
+        )}
         <Card
           icon={PlanIcon}
           label="Plano"
           value={plan.label}
           to="/configuracoes/billing"
         />
+        {!features.isTeamPlan && (
+          <Card
+            icon={Sparkles}
+            label="Quer time?"
+            value="Conheça o Team"
+            to="/pricing"
+          />
+        )}
       </div>
 
       <section className="rounded-xl border bg-linear-to-br from-primary/8 via-primary/3 to-secondary/10 p-6">
@@ -73,8 +79,7 @@ export default function DashboardPage() {
           <div className="flex-1">
             <h2 className="text-lg font-semibold">Validar end-to-end</h2>
             <p className="text-sm text-muted-foreground mt-1 mb-4">
-              Use estes atalhos para testar o fluxo completo: assinatura,
-              convite e gestão.
+              Atalhos rápidos pros principais fluxos.
             </p>
             <div className="flex flex-wrap gap-2">
               <Link to="/pricing">
@@ -82,11 +87,13 @@ export default function DashboardPage() {
                   Ver planos <ArrowRight className="size-4" />
                 </Button>
               </Link>
-              <Link to="/configuracoes/membros">
-                <Button variant="outline" size="sm" className="gap-2">
-                  Convidar membro <ArrowRight className="size-4" />
-                </Button>
-              </Link>
+              {features.canManageMembers && (
+                <Link to="/configuracoes/membros">
+                  <Button variant="outline" size="sm" className="gap-2">
+                    Convidar membro <ArrowRight className="size-4" />
+                  </Button>
+                </Link>
+              )}
               <Link to="/configuracoes/billing">
                 <Button variant="outline" size="sm" className="gap-2">
                   Gerenciar billing <CreditCard className="size-4" />

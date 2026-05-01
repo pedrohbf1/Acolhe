@@ -6,6 +6,8 @@ import SettingsLayout from "@/pages/app/settings/layout";
 import ProfileSettingsPage from "@/pages/app/settings/profile";
 import OrganizationSettingsPage from "@/pages/app/settings/organization";
 import MembersSettingsPage from "@/pages/app/settings/members";
+import RolesSettingsPage from "@/pages/app/settings/roles";
+import AuditLogSettingsPage from "@/pages/app/settings/audit-log";
 import BillingSettingsPage from "@/pages/app/settings/billing";
 import AcceptInvitationPage from "@/pages/auth/accept-invitation";
 
@@ -21,6 +23,8 @@ export const routesApp: Routes[] = [
       { path: "perfil", element: <ProfileSettingsPage /> },
       { path: "organizacao", element: <OrganizationSettingsPage /> },
       { path: "membros", element: <MembersSettingsPage /> },
+      { path: "cargos", element: <RolesSettingsPage /> },
+      { path: "logs", element: <AuditLogSettingsPage /> },
       { path: "billing", element: <BillingSettingsPage /> },
     ],
   },

@@ -3,6 +3,7 @@ import { Prisma } from "../../generated/prisma/client";
 
 interface AuditLogInput {
   userId: string;
+  organizationId?: string | null;
   action: string;
   resource: string;
   resourceId: string;
@@ -12,5 +13,10 @@ interface AuditLogInput {
 }
 
 export async function createAuditLog(data: AuditLogInput) {
-  return prisma.auditLog.create({ data });
+  return prisma.auditLog.create({
+    data: {
+      ...data,
+      organizationId: data.organizationId ?? null,
+    },
+  });
 }

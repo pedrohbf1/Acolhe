@@ -1,21 +1,59 @@
 import { cn } from "@/lib/utils";
-import { Building2, CreditCard, User, Users } from "lucide-react";
+import { usePlanFeatures } from "@/hooks/usePlanFeatures";
+import {
+  Building2,
+  CreditCard,
+  ListChecks,
+  Scroll,
+  ShieldCheck,
+  User,
+  Users,
+} from "lucide-react";
 import { NavLink, Outlet } from "react-router-dom";
 
-const tabs = [
-  { to: "/configuracoes/perfil", label: "Perfil", icon: User },
-  { to: "/configuracoes/organizacao", label: "Organização", icon: Building2 },
-  { to: "/configuracoes/membros", label: "Membros", icon: Users },
-  { to: "/configuracoes/billing", label: "Assinatura", icon: CreditCard },
-];
-
 export default function SettingsLayout() {
+  const features = usePlanFeatures();
+
+  const tabs = [
+    { to: "/configuracoes/perfil", label: "Perfil", icon: User, show: true },
+    {
+      to: "/configuracoes/organizacao",
+      label: "Organização",
+      icon: Building2,
+      show: true,
+    },
+    {
+      to: "/configuracoes/membros",
+      label: "Membros",
+      icon: Users,
+      show: features.canManageMembers,
+    },
+    {
+      to: "/configuracoes/cargos",
+      label: "Cargos",
+      icon: ShieldCheck,
+      show: features.canManageRoles,
+    },
+    {
+      to: "/configuracoes/logs",
+      label: "Logs",
+      icon: Scroll,
+      show: features.canViewAuditLogs,
+    },
+    {
+      to: "/configuracoes/billing",
+      label: "Assinatura",
+      icon: CreditCard,
+      show: true,
+    },
+  ].filter((t) => t.show);
+
   return (
     <div className="flex flex-col gap-6">
       <div>
         <h1 className="text-2xl font-semibold tracking-tight">Configurações</h1>
         <p className="text-sm text-muted-foreground mt-1">
-          Gerencie seu perfil, organização, membros e assinatura.
+          Gerencie seu perfil, organização e assinatura.
         </p>
       </div>
 
@@ -48,6 +86,20 @@ export default function SettingsLayout() {
           <Outlet />
         </div>
       </div>
+
+      {!features.isTeamPlan && (
+        <div className="flex items-start gap-3 rounded-lg border border-primary/20 bg-primary/5 p-4 text-sm">
+          <ListChecks className="size-4 mt-0.5 text-primary" />
+          <div>
+            <strong>Trabalha em equipe?</strong> O plano <strong>Team</strong>{" "}
+            libera múltiplas organizações, convites de membros, cargos
+            personalizados e logs de auditoria.{" "}
+            <NavLink to="/pricing" className="text-primary hover:underline">
+              Ver planos
+            </NavLink>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

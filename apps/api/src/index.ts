@@ -8,15 +8,14 @@ import { betterAuthPlugin, OpenAPI } from "@/plugins/better-openApi";
 import { auditPlugin } from "@/plugins/auditPlugin";
 
 // ─── Módulos ──────────────────────────────────────────────────────────────────
-// Adicione os imports dos seus controllers aqui ↓
+import { auditLogController } from "@/modules/audit-log/audit-log.controller";
 
 // ─── Rotas privadas (exigem autenticação) ─────────────────────────────────────
 const privateRoutes = new Elysia()
   .use(betterAuthPlugin)
   .use(auditPlugin)
-  .guard({ auth: true });
-  // Adicione novos módulos aqui ↓
-  // .use(meuController)
+  .guard({ auth: true })
+  .use(auditLogController);
 
 // ─── App ──────────────────────────────────────────────────────────────────────
 const app = new Elysia()

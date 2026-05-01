@@ -203,6 +203,7 @@ export const auditPlugin = new Elysia({ name: "Audit Plugin" })
 
         await createAuditLog({
           userId: session.user.id,
+          organizationId: session.session.activeOrganizationId ?? null,
           action,
           resource,
           resourceId: entityId || pathname,

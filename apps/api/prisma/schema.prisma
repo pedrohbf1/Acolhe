@@ -90,19 +90,22 @@ model Verification {
 }
 
 model AuditLog {
-  id         String   @id @default(cuid())
-  userId     String
-  action     String
-  resource   String
-  resourceId String
-  metadata   Json?
-  ip         String?
-  userAgent  String?
-  createdAt  DateTime @default(now())
+  id             String   @id @default(cuid())
+  userId         String
+  organizationId String?
+  action         String
+  resource       String
+  resourceId     String
+  metadata       Json?
+  ip             String?
+  userAgent      String?
+  createdAt      DateTime @default(now())
 
-  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+  user         User          @relation(fields: [userId], references: [id], onDelete: Cascade)
+  organization Organization? @relation(fields: [organizationId], references: [id], onDelete: Cascade)
 
   @@index([userId])
+  @@index([organizationId, createdAt])
   @@index([resource, resourceId])
   @@map("audit_log")
 }
@@ -136,6 +139,7 @@ model Organization {
   members           Member[]
   invitations       Invitation[]
   organizationRoles OrganizationRole[]
+  auditLogs         AuditLog[]
 
   @@map("organization")
 }

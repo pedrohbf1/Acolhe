@@ -9,6 +9,7 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog";
 import { useActiveOrganization } from "@/hooks/useOrganizations";
+import { usePlanFeatures } from "@/hooks/usePlanFeatures";
 import { useZodForm } from "@/hooks/useZodForm";
 import { authClient } from "@/lib/auth-client";
 import {
@@ -22,6 +23,7 @@ import { toast } from "sonner";
 
 export default function OrganizationSettingsPage() {
   const { data: org } = useActiveOrganization();
+  const features = usePlanFeatures();
   const qc = useQueryClient();
 
   const {
@@ -116,6 +118,7 @@ export default function OrganizationSettingsPage() {
         </form>
       </section>
 
+      {features.isTeamPlan && (
       <section className="rounded-xl border border-destructive/30 bg-destructive/2 p-6">
         <header className="mb-5">
           <h2 className="text-base font-semibold text-destructive">
@@ -168,6 +171,7 @@ export default function OrganizationSettingsPage() {
           </DialogContent>
         </Dialog>
       </section>
+      )}
     </div>
   );
 }

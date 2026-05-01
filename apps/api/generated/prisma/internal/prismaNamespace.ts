@@ -1336,6 +1336,7 @@ export type VerificationScalarFieldEnum = (typeof VerificationScalarFieldEnum)[k
 export const AuditLogScalarFieldEnum = {
   id: 'id',
   userId: 'userId',
+  organizationId: 'organizationId',
   action: 'action',
   resource: 'resource',
   resourceId: 'resourceId',
