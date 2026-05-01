@@ -9,6 +9,7 @@
     "start": "bun run src/index.ts",
     "build": "bun build ./src/index.ts --outdir ./dist --target bun",
     "type-check": "tsc --noEmit",
+    "test": "bun test src",
     "db:migrate": "bunx prisma migrate dev && bunx prisma generate",
     "db:migrate:deploy": "bunx prisma migrate deploy && bunx prisma generate",
     "db:generate": "bunx prisma generate",

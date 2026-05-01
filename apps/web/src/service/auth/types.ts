@@ -13,6 +13,7 @@ export interface Session {
   createdAt: string;
   updatedAt: string;
   expiresAt: string;
+  activeOrganizationId?: string | null;
 }
 
 export interface User {

@@ -9,13 +9,15 @@ import { auditPlugin } from "@/plugins/auditPlugin";
 
 // ─── Módulos ──────────────────────────────────────────────────────────────────
 import { auditLogController } from "@/modules/audit-log/audit-log.controller";
+import { billingController } from "@/modules/billing/billing.controller";
 
 // ─── Rotas privadas (exigem autenticação) ─────────────────────────────────────
 const privateRoutes = new Elysia()
   .use(betterAuthPlugin)
   .use(auditPlugin)
   .guard({ auth: true })
-  .use(auditLogController);
+  .use(auditLogController)
+  .use(billingController);
 
 // ─── App ──────────────────────────────────────────────────────────────────────
 const app = new Elysia()

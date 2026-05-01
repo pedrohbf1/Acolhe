@@ -3,7 +3,8 @@ import { useActivePlan, useSubscriptions } from "@/hooks/useOrganizations";
 import { authClient } from "@/lib/auth-client";
 import { PLANS_DISPLAY, type PlanName } from "@/lib/plans";
 import { useMutation } from "@tanstack/react-query";
-import { Check } from "lucide-react";
+import { Check, CheckCircle2 } from "lucide-react";
+import { Link } from "react-router-dom";
 import { toast } from "sonner";
 
 function formatBRL(v: number) {
@@ -43,9 +44,17 @@ export default function PricingPage() {
           Comece grátis e atualize quando precisar de mais. Cancele quando
           quiser.
         </p>
+        {activeSub && (
+          <Link
+            to="/configuracoes/billing"
+            className="inline-flex items-center gap-1 mt-3 text-sm text-primary hover:underline"
+          >
+            Ver detalhes da minha assinatura →
+          </Link>
+        )}
       </div>
 
-      <div className="grid gap-6 md:grid-cols-3 max-w-5xl mx-auto w-full">
+      <div className="grid gap-6 md:grid-cols-3 max-w-5xl mx-auto w-full pt-3">
         {PLANS_DISPLAY.map((plan) => {
           const Icon = plan.icon;
           const isCurrent = plan.name === currentPlan;
@@ -54,26 +63,45 @@ export default function PricingPage() {
           return (
             <div
               key={plan.name}
-              className={`relative rounded-2xl border p-7 flex flex-col ${
-                plan.highlight
-                  ? "border-primary/50 shadow-lg shadow-primary/10 bg-card"
-                  : "bg-card"
+              className={`relative rounded-2xl border p-7 flex flex-col transition-all ${
+                isCurrent
+                  ? "border-primary ring-2 ring-primary/30 shadow-xl shadow-primary/15 bg-card scale-[1.02]"
+                  : plan.highlight
+                  ? "border-primary/40 shadow-lg shadow-primary/10 bg-card"
+                  : "bg-card hover:border-primary/30"
               }`}
             >
-              {plan.highlight && (
+              {/* Badge superior: prioriza "atual", senão "popular" */}
+              {isCurrent ? (
                 <div className="absolute -top-3 left-1/2 -translate-x-1/2">
-                  <span className="bg-primary text-primary-foreground text-[11px] font-semibold tracking-wide uppercase px-3 py-1 rounded-full">
+                  <span className="bg-primary text-primary-foreground text-[11px] font-semibold tracking-wide uppercase px-3 py-1 rounded-full inline-flex items-center gap-1.5 shadow-md">
+                    <CheckCircle2 className="size-3.5" />
+                    Esse é meu plano
+                  </span>
+                </div>
+              ) : plan.highlight ? (
+                <div className="absolute -top-3 left-1/2 -translate-x-1/2">
+                  <span className="bg-foreground text-background text-[11px] font-semibold tracking-wide uppercase px-3 py-1 rounded-full">
                     Mais popular
                   </span>
                 </div>
-              )}
+              ) : null}
 
-              <div className="size-11 rounded-xl bg-primary/10 flex items-center justify-center">
+              <div
+                className={`size-11 rounded-xl flex items-center justify-center ${
+                  isCurrent ? "bg-primary/15" : "bg-primary/10"
+                }`}
+              >
                 <Icon className="size-5 text-primary" />
               </div>
 
               <div className="mt-5">
-                <h3 className="text-xl font-semibold">{plan.label}</h3>
+                <h3 className="text-xl font-semibold flex items-center gap-2">
+                  {plan.label}
+                  {isCurrent && (
+                    <Check className="size-4 text-primary" />
+                  )}
+                </h3>
                 <p className="text-sm text-muted-foreground mt-1">
                   {plan.tagline}
                 </p>
@@ -90,7 +118,7 @@ export default function PricingPage() {
                     <span className="text-sm text-muted-foreground">/mês</span>
                   </div>
                 )}
-                {plan.trialDays > 0 && (
+                {plan.trialDays > 0 && !isCurrent && (
                   <p className="text-xs text-muted-foreground mt-1">
                     {plan.trialDays} dias grátis para testar
                   </p>
@@ -100,7 +128,11 @@ export default function PricingPage() {
               <ul className="mt-6 space-y-2.5 flex-1">
                 {plan.features.map((f) => (
                   <li key={f} className="flex items-start gap-2 text-sm">
-                    <Check className="size-4 text-primary shrink-0 mt-0.5" />
+                    <Check
+                      className={`size-4 shrink-0 mt-0.5 ${
+                        isCurrent ? "text-primary" : "text-primary/70"
+                      }`}
+                    />
                     <span>{f}</span>
                   </li>
                 ))}
@@ -108,13 +140,19 @@ export default function PricingPage() {
 
               <div className="mt-7">
                 {isCurrent ? (
-                  <Button variant="outline" disabled className="w-full">
-                    Plano atual
+                  <Button
+                    variant="outline"
+                    disabled
+                    className="w-full border-primary/40 text-primary"
+                  >
+                    Plano atual ✓
                   </Button>
                 ) : isFree ? (
-                  <Button variant="outline" disabled className="w-full">
-                    Grátis pra sempre
-                  </Button>
+                  <Link to="/configuracoes/billing">
+                    <Button variant="outline" className="w-full">
+                      {activeSub ? "Fazer downgrade" : "Grátis pra sempre"}
+                    </Button>
+                  </Link>
                 ) : (
                   <Button
                     className="w-full"
