@@ -11,6 +11,7 @@
  *   2. Tipos derivam automático via PlanName
  *   3. Limites são aplicados onde getPlan(name).limits for consultado
  */
+import { env } from "./env";
 
 export type PlanName = "free" | "pro" | "team";
 
@@ -41,17 +42,15 @@ export const PLANS: Record<PlanName, Plan> = {
   },
   pro: {
     name: "pro",
-    // TODO: trocar pelo Price ID real quando criar no Stripe Dashboard
-    priceId: process.env.STRIPE_PRICE_PRO_MONTHLY ?? "price_pro_monthly_placeholder",
-    annualDiscountPriceId: process.env.STRIPE_PRICE_PRO_YEARLY ?? null,
+    priceId: env.STRIPE_PRICE_PRO_MONTHLY ?? "price_pro_monthly_placeholder",
+    annualDiscountPriceId: env.STRIPE_PRICE_PRO_YEARLY ?? null,
     trialDays: 7,
     limits: { maxOrganizations: 3, maxPatients: 150 },
   },
   team: {
     name: "team",
-    // TODO: trocar pelo Price ID real quando criar no Stripe Dashboard
-    priceId: process.env.STRIPE_PRICE_TEAM_MONTHLY ?? "price_team_monthly_placeholder",
-    annualDiscountPriceId: process.env.STRIPE_PRICE_TEAM_YEARLY ?? null,
+    priceId: env.STRIPE_PRICE_TEAM_MONTHLY ?? "price_team_monthly_placeholder",
+    annualDiscountPriceId: env.STRIPE_PRICE_TEAM_YEARLY ?? null,
     trialDays: 7,
     limits: { maxOrganizations: 5, maxPatients: 500 },
   },

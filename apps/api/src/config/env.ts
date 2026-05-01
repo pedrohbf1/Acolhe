@@ -1,3 +1,12 @@
+/**
+ * Único ponto da aplicação que toca em `process.env`.
+ * Todo o resto do código importa daqui via `env.NOME_DA_VAR`.
+ *
+ * Regras:
+ * - `.required()`: lança erro no boot se faltar (use para vars sem fallback seguro)
+ * - `.default(x)`: retorna o fallback se a var não estiver definida
+ * - `.value`: retorna `string | undefined` (use para vars opcionais sem fallback)
+ */
 function getEnv(key: string) {
   const value = process.env[key];
 
@@ -38,6 +47,10 @@ export const env = {
   // Stripe
   STRIPE_SECRET_KEY: getEnv("STRIPE_SECRET_KEY").required(),
   STRIPE_WEBHOOK_SECRET: getEnv("STRIPE_WEBHOOK_SECRET").required(),
+  STRIPE_PRICE_PRO_MONTHLY: getEnv("STRIPE_PRICE_PRO_MONTHLY").value,
+  STRIPE_PRICE_PRO_YEARLY: getEnv("STRIPE_PRICE_PRO_YEARLY").value,
+  STRIPE_PRICE_TEAM_MONTHLY: getEnv("STRIPE_PRICE_TEAM_MONTHLY").value,
+  STRIPE_PRICE_TEAM_YEARLY: getEnv("STRIPE_PRICE_TEAM_YEARLY").value,
 
   // Resend
   RESEND_API_KEY: getEnv("RESEND_API_KEY").required(),
