@@ -27,15 +27,13 @@ export function usePlanFeatures() {
     plan,
     isTeamPlan,
     isOwner,
-    /** Mostra o seletor de organização no sidebar e a opção "criar org". */
-    canSeeOrgSwitcher: isTeamPlan,
     /** Mostra a aba "Membros" e botão de convidar. */
     canManageMembers: isTeamPlan,
     /** Mostra a aba "Cargos" (custom roles). Só owner do plano team. */
     canManageRoles: isTeamPlan && isOwner,
     /** Mostra a aba "Logs" (audit). Só owner do plano team. */
     canViewAuditLogs: isTeamPlan && isOwner,
-    /** Permite criar mais organizações. */
+    /** Permite criar organizações adicionais (já tem 1 sempre via auto-create). */
     canCreateOrg: isTeamPlan,
   };
 }

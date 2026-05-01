@@ -6,23 +6,9 @@ import {
   SidebarContent,
   SidebarFooter,
   SidebarHeader,
-  useSidebar,
 } from "@/components/ui/sidebar";
 import { usePlanFeatures } from "@/hooks/usePlanFeatures";
 import { getSidebarConfig } from "./config/sidebar-data";
-
-function SoloLogo() {
-  const { state } = useSidebar();
-  return state === "collapsed" ? (
-    <div className="size-8 flex items-center justify-center rounded-md bg-primary text-primary-foreground font-bold">
-      u
-    </div>
-  ) : (
-    <div className="h-7 flex items-center text-base font-semibold tracking-tight">
-      useAcolhe
-    </div>
-  );
-}
 
 export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
   const features = usePlanFeatures();
@@ -31,7 +17,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
   return (
     <Sidebar collapsible="icon" {...props}>
       <SidebarHeader>
-        {features.canSeeOrgSwitcher ? <OrgSwitcher /> : <SoloLogo />}
+        <OrgSwitcher />
       </SidebarHeader>
       <SidebarContent className="no-scrollbar">
         <NavMain items={sidebarNav} />

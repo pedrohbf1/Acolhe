@@ -34,10 +34,11 @@ interface AuditLogItem {
 }
 
 interface AuditLogResponse {
-  items: AuditLogItem[];
+  data: AuditLogItem[];
   total: number;
   page: number;
   limit: number;
+  totalPages: number;
 }
 
 const API_URL = import.meta.env.VITE_API_URL ?? "http://localhost:3333";
@@ -118,7 +119,7 @@ export default function AuditLogSettingsPage() {
   const [action, setAction] = useState("");
   const limit = 25;
 
-  const { data, isLoading, error } = useQuery<AuditLogResponse>({
+  const { data: response, isLoading, error } = useQuery<AuditLogResponse>({
     queryKey: ["audit-logs", page, resource, action],
     queryFn: async () => {
       const params = new URLSearchParams({
@@ -130,11 +131,19 @@ export default function AuditLogSettingsPage() {
       const res = await fetch(`${API_URL}/audit-logs?${params}`, {
         credentials: "include",
       });
-      if (!res.ok) throw new Error(`Erro ${res.status}`);
+      if (!res.ok) {
+        const body = await res.text();
+        throw new Error(body || `Erro ${res.status}`);
+      }
       return res.json();
     },
     enabled: features.canViewAuditLogs,
+    retry: false,
   });
+
+  const items = response?.data ?? [];
+  const total = response?.total ?? 0;
+  const totalPages = response?.totalPages ?? 1;
 
   if (!features.canViewAuditLogs) {
     return (
@@ -156,8 +165,6 @@ export default function AuditLogSettingsPage() {
       </section>
     );
   }
-
-  const totalPages = data ? Math.max(1, Math.ceil(data.total / limit)) : 1;
 
   return (
     <div className="flex flex-col gap-6">
@@ -221,25 +228,25 @@ export default function AuditLogSettingsPage() {
           </div>
         )}
 
-        {data && data.items.length === 0 && (
+        {response && items.length === 0 && (
           <div className="p-12 text-center text-sm text-muted-foreground">
             Nenhum evento registrado{(resource || action) && " com esses filtros"}.
           </div>
         )}
 
-        {data && data.items.length > 0 && (
+        {response && items.length > 0 && (
           <ul className="divide-y divide-border">
-            {data.items.map((item) => (
+            {items.map((item) => (
               <LogRow key={item.id} item={item} />
             ))}
           </ul>
         )}
 
-        {data && data.total > 0 && (
+        {response && total > 0 && (
           <footer className="px-6 py-3 border-t flex items-center justify-between text-sm">
             <div className="text-xs text-muted-foreground">
-              Página {data.page} de {totalPages} — {data.total} evento
-              {data.total === 1 ? "" : "s"}
+              Página {response.page} de {totalPages} — {total} evento
+              {total === 1 ? "" : "s"}
             </div>
             <div className="flex items-center gap-1">
               <Button
