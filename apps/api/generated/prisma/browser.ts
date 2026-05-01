@@ -47,3 +47,28 @@ export type AuditLog = Prisma.AuditLogModel
  * 
  */
 export type AppSetting = Prisma.AppSettingModel
+/**
+ * Model Organization
+ * 
+ */
+export type Organization = Prisma.OrganizationModel
+/**
+ * Model Member
+ * 
+ */
+export type Member = Prisma.MemberModel
+/**
+ * Model Invitation
+ * 
+ */
+export type Invitation = Prisma.InvitationModel
+/**
+ * Model OrganizationRole
+ * 
+ */
+export type OrganizationRole = Prisma.OrganizationRoleModel
+/**
+ * Model Subscription
+ * 
+ */
+export type Subscription = Prisma.SubscriptionModel

@@ -1,11 +1,35 @@
 import { betterAuth } from "better-auth";
 import { prismaAdapter } from "better-auth/adapters/prisma";
-import { prisma } from "./db";
-import { admin, openAPI } from "better-auth/plugins";
-import { env } from "@/config/env";
+import { admin, openAPI, organization } from "better-auth/plugins";
 import { localization } from "better-auth-localization";
+import { stripe as stripePlugin } from "@better-auth/stripe";
+import Stripe from "stripe";
+
+import { prisma } from "./db";
+import { sendOrganizationInvitationEmail } from "./email";
+import { env } from "@/config/env";
+import { ac, roles } from "@/config/permissions";
+import { stripePlans, getPlan } from "@/config/plans";
 
 const isProd = env.NODE_ENV === "production";
+
+const stripeClient = new Stripe(env.STRIPE_SECRET_KEY, {
+  apiVersion: "2026-04-22.dahlia",
+});
+
+/**
+ * Plano ativo do usuário. Sem assinatura ativa/trialing → free.
+ * Usado para enforcement do `organizationLimit`.
+ */
+async function getUserActivePlan(userId: string) {
+  const sub = await prisma.subscription.findFirst({
+    where: {
+      referenceId: userId,
+      status: { in: ["active", "trialing"] },
+    },
+  });
+  return getPlan(sub?.plan ?? "free");
+}
 
 export const auth = betterAuth({
   secret: env.BETTER_AUTH_SECRET,
@@ -23,6 +47,47 @@ export const auth = betterAuth({
       fallbackLocale: "default",
     }),
     admin(),
+
+    organization({
+      ac,
+      roles,
+      creatorRole: "owner",
+      allowUserToCreateOrganization: true,
+      dynamicAccessControl: { enabled: true },
+      organizationLimit: async (user) => {
+        const plan = await getUserActivePlan(user.id);
+        const ownerships = await prisma.member.count({
+          where: {
+            userId: user.id,
+            role: { contains: "owner" },
+          },
+        });
+        return ownerships >= plan.limits.maxOrganizations;
+      },
+      async sendInvitationEmail(data) {
+        const inviteUrl = `${env.SITE_URL}/accept-invitation/${data.id}`;
+        const inviter = data.inviter as {
+          user: { name?: string | null; email: string };
+        };
+        await sendOrganizationInvitationEmail({
+          to: data.email,
+          inviterName: inviter.user.name ?? inviter.user.email,
+          organizationName: data.organization.name,
+          inviteUrl,
+        });
+      },
+    }),
+
+    stripePlugin({
+      stripeClient,
+      stripeWebhookSecret: env.STRIPE_WEBHOOK_SECRET,
+      createCustomerOnSignUp: true,
+      subscription: {
+        enabled: true,
+        plans: stripePlans,
+        requireEmailVerification: false,
+      },
+    }),
   ],
 
   emailAndPassword: {
@@ -37,8 +102,8 @@ export const auth = betterAuth({
 
   rateLimit: {
     enabled: true,
-    window: 60, // janela em segundos
-    max: 20, // máximo de requisições por janela por IP
+    window: 60,
+    max: 20,
   },
 
   advanced: {

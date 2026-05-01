@@ -33,4 +33,15 @@ export const env = {
 
   // Database
   DATABASE_URL: getEnv("DATABASE_URL").required(),
+  DIRECT_URL: getEnv("DIRECT_URL").value,
+
+  // Stripe
+  STRIPE_SECRET_KEY: getEnv("STRIPE_SECRET_KEY").required(),
+  STRIPE_WEBHOOK_SECRET: getEnv("STRIPE_WEBHOOK_SECRET").required(),
+
+  // Resend
+  RESEND_API_KEY: getEnv("RESEND_API_KEY").required(),
+  RESEND_FROM_EMAIL: getEnv("RESEND_FROM_EMAIL").default(
+    "useAcolhe <onboarding@resend.dev>",
+  ) as string,
 };

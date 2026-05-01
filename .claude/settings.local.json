@@ -8,7 +8,13 @@
       "Bash(git -C \"d:/Programação/Projetos/useAcolhe/apps/api\" log --oneline -5)",
       "Bash(git -C \"d:/Programação/Projetos/useAcolhe/apps/api\" remote -v)",
       "Bash(git add *)",
-      "Bash(grep -E \"\\\\.env$|\\\\.env\\\\.local\")"
+      "Bash(grep -E \"\\\\.env$|\\\\.env\\\\.local\")",
+      "Bash(git -c user.email=\"pedrohbf12332@gmail.com\" -c user.name=\"pedrohbf1\" commit -m \"first commit\")",
+      "Bash(git branch *)",
+      "Bash(git push *)",
+      "Bash(git checkout *)",
+      "Bash(bun add *)",
+      "Bash(bunx prisma *)"
     ]
   }
 }
