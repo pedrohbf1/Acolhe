@@ -8,7 +8,11 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
-import { useActiveOrganization } from "@/hooks/useOrganizations";
+import {
+  useActiveOrganization,
+  useOrganizations,
+} from "@/hooks/useOrganizations";
+import { useAuth } from "@/hooks/useAuth";
 import { usePlanFeatures } from "@/hooks/usePlanFeatures";
 import { useZodForm } from "@/hooks/useZodForm";
 import { authClient } from "@/lib/auth-client";
@@ -17,12 +21,13 @@ import {
   type SchemaCreateOrganization,
 } from "@/schemas/org/create";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
-import { Trash2 } from "lucide-react";
+import { Building2, Loader2, Plus, Trash2 } from "lucide-react";
 import { useEffect, useState } from "react";
 import { toast } from "sonner";
 
 export default function OrganizationSettingsPage() {
-  const { data: org } = useActiveOrganization();
+  const { data: org, isLoading: loadingActive } = useActiveOrganization();
+  const { data: allOrgs, isLoading: loadingList } = useOrganizations();
   const features = usePlanFeatures();
   const qc = useQueryClient();
 
@@ -78,12 +83,19 @@ export default function OrganizationSettingsPage() {
     onError: (e: Error) => toast.error(e.message),
   });
 
-  if (!org) {
+  if (loadingActive || loadingList) {
     return (
-      <div className="text-sm text-muted-foreground">
-        Sem organização ativa.
+      <div className="flex items-center gap-2 text-sm text-muted-foreground">
+        <Loader2 className="size-4 animate-spin" /> Carregando…
       </div>
     );
+  }
+
+  if (!org) {
+    // Fallback raríssimo: o useEnsureActiveOrg deveria ter resolvido isso.
+    // Pode acontecer se o usuário deletou todas as orgs e o hook ainda não
+    // rodou, ou se a criação falhou silenciosa. Damos um botão manual.
+    return <NoOrgFallback hasOrgsButNoneActive={(allOrgs?.length ?? 0) > 0} />;
   }
 
   return (
@@ -173,5 +185,86 @@ export default function OrganizationSettingsPage() {
       </section>
       )}
     </div>
+  );
+}
+
+// ─── Fallback: sem org ativa ─────────────────────────────────────────────────
+
+function NoOrgFallback({
+  hasOrgsButNoneActive,
+}: {
+  hasOrgsButNoneActive: boolean;
+}) {
+  const { user } = useAuth();
+  const qc = useQueryClient();
+
+  const create = useMutation({
+    mutationFn: async () => {
+      const slug = `c-${user?.id.slice(0, 16).toLowerCase()}`;
+      const res = await authClient.organization.create({
+        name: "Meu consultório",
+        slug,
+      });
+      if ("error" in res && res.error) throw new Error(res.error.message);
+      return res;
+    },
+    onSuccess: () => {
+      toast.success("Organização criada.");
+      qc.invalidateQueries({ queryKey: ["organizations"] });
+      qc.invalidateQueries({ queryKey: ["organization", "active"] });
+      qc.invalidateQueries({ queryKey: ["session"] });
+    },
+    onError: (e: Error) => toast.error(e.message),
+  });
+
+  const setFirst = useMutation({
+    mutationFn: async () => {
+      const list = await authClient.organization.list();
+      const orgs = "data" in list ? (list.data ?? []) : [];
+      if (orgs.length === 0) throw new Error("Sem orgs disponíveis");
+      const res = await authClient.organization.setActive({
+        organizationId: orgs[0].id,
+      });
+      if ("error" in res && res.error) throw new Error(res.error.message);
+    },
+    onSuccess: () => {
+      toast.success("Organização ativada.");
+      qc.invalidateQueries({ queryKey: ["organizations"] });
+      qc.invalidateQueries({ queryKey: ["organization", "active"] });
+      qc.invalidateQueries({ queryKey: ["session"] });
+    },
+    onError: (e: Error) => toast.error(e.message),
+  });
+
+  return (
+    <section className="rounded-xl border bg-card p-8 text-center">
+      <div className="size-14 mx-auto rounded-2xl bg-primary/10 flex items-center justify-center mb-4">
+        <Building2 className="size-6 text-primary" />
+      </div>
+      <h2 className="text-lg font-semibold">
+        {hasOrgsButNoneActive
+          ? "Nenhuma organização ativa"
+          : "Você ainda não tem uma organização"}
+      </h2>
+      <p className="text-sm text-muted-foreground mt-2 max-w-md mx-auto">
+        {hasOrgsButNoneActive
+          ? "Selecione uma organização para continuar."
+          : "Crie sua primeira organização — é nela que ficam pacientes, agenda e equipe."}
+      </p>
+      <Button
+        className="mt-5 gap-2"
+        onClick={() =>
+          hasOrgsButNoneActive ? setFirst.mutate() : create.mutate()
+        }
+        disabled={create.isPending || setFirst.isPending}
+      >
+        <Plus className="size-4" />
+        {create.isPending || setFirst.isPending
+          ? "Processando..."
+          : hasOrgsButNoneActive
+          ? "Ativar primeira organização"
+          : "Criar organização"}
+      </Button>
+    </section>
   );
 }
