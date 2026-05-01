@@ -11,7 +11,9 @@ import {
   sendResetPasswordEmail,
   sendVerifyEmail,
 } from "./email";
-import { createAuditLog } from "./auditLog";
+import AuditLogRepository from "@/modules/audit-log/audit-log.repository";
+
+const auditLogRepository = new AuditLogRepository();
 import { env } from "@/config/env";
 import { ac, roles } from "@/config/permissions";
 import { stripePlans, getPlan } from "@/config/plans";
@@ -79,7 +81,7 @@ export const auth = betterAuth({
                 role: "owner",
               },
             });
-            await createAuditLog({
+            await auditLogRepository.create({
               userId: user.id,
               organizationId: orgId,
               action: "auto_create",
@@ -138,7 +140,7 @@ export const auth = betterAuth({
       // org, e o conteúdo relevante.
       organizationHooks: {
         afterCreateOrganization: async ({ organization, user }) => {
-          await createAuditLog({
+          await auditLogRepository.create({
             userId: user.id,
             organizationId: organization.id,
             action: "create",
@@ -149,7 +151,7 @@ export const auth = betterAuth({
         },
         afterUpdateOrganization: async ({ organization, user }) => {
           if (!user || !organization) return;
-          await createAuditLog({
+          await auditLogRepository.create({
             userId: user.id,
             organizationId: organization.id,
             action: "update",
@@ -160,7 +162,7 @@ export const auth = betterAuth({
         },
         afterDeleteOrganization: async ({ organization, user }) => {
           if (!user || !organization) return;
-          await createAuditLog({
+          await auditLogRepository.create({
             userId: user.id,
             organizationId: null, // a org não existe mais
             action: "delete",
@@ -171,7 +173,7 @@ export const auth = betterAuth({
         },
         afterAddMember: async ({ member, user, organization }) => {
           if (!user) return;
-          await createAuditLog({
+          await auditLogRepository.create({
             userId: user.id,
             organizationId: organization.id,
             action: "add",
@@ -182,7 +184,7 @@ export const auth = betterAuth({
         },
         afterRemoveMember: async ({ member, user, organization }) => {
           if (!user) return;
-          await createAuditLog({
+          await auditLogRepository.create({
             userId: user.id,
             organizationId: organization.id,
             action: "remove",
@@ -193,7 +195,7 @@ export const auth = betterAuth({
         },
         afterUpdateMemberRole: async ({ member, user, organization }) => {
           if (!user) return;
-          await createAuditLog({
+          await auditLogRepository.create({
             userId: user.id,
             organizationId: organization.id,
             action: "update_role",
@@ -204,7 +206,7 @@ export const auth = betterAuth({
         },
         afterCreateInvitation: async ({ invitation, inviter, organization }) => {
           if (!inviter) return;
-          await createAuditLog({
+          await auditLogRepository.create({
             userId: inviter.userId ?? inviter.id,
             organizationId: organization.id,
             action: "create",
@@ -215,7 +217,7 @@ export const auth = betterAuth({
         },
         afterAcceptInvitation: async ({ invitation, member, user, organization }) => {
           if (!user) return;
-          await createAuditLog({
+          await auditLogRepository.create({
             userId: user.id,
             organizationId: organization.id,
             action: "accept",
@@ -230,7 +232,7 @@ export const auth = betterAuth({
         },
         afterRejectInvitation: async ({ invitation, user, organization }) => {
           if (!user) return;
-          await createAuditLog({
+          await auditLogRepository.create({
             userId: user.id,
             organizationId: organization.id,
             action: "reject",
@@ -241,7 +243,7 @@ export const auth = betterAuth({
         },
         afterCancelInvitation: async ({ invitation, cancelledBy, organization }) => {
           if (!cancelledBy) return;
-          await createAuditLog({
+          await auditLogRepository.create({
             userId: cancelledBy.id,
             organizationId: organization.id,
             action: "cancel",

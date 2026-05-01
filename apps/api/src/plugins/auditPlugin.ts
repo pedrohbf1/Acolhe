@@ -1,7 +1,9 @@
 import Elysia from "elysia";
 import { prisma } from "@/utils/db";
 import { auth } from "@/utils/auth";
-import { createAuditLog } from "@/utils/auditLog";
+import AuditLogRepository from "@/modules/audit-log/audit-log.repository";
+
+const auditLogRepository = new AuditLogRepository();
 
 // ─── Deriva model Prisma a partir do segmento de rota ────────────────────────
 
@@ -201,7 +203,7 @@ export const auditPlugin = new Elysia({ name: "Audit Plugin" })
           request.headers.get("x-forwarded-for")?.split(",")[0]?.trim() ?? undefined;
         const userAgent = request.headers.get("user-agent") ?? undefined;
 
-        await createAuditLog({
+        await auditLogRepository.create({
           userId: session.user.id,
           organizationId: session.session.activeOrganizationId ?? null,
           action,
