@@ -6,7 +6,11 @@ import { stripe as stripePlugin } from "@better-auth/stripe";
 import Stripe from "stripe";
 
 import { prisma } from "./db";
-import { sendOrganizationInvitationEmail } from "./email";
+import {
+  sendOrganizationInvitationEmail,
+  sendResetPasswordEmail,
+  sendVerifyEmail,
+} from "./email";
 import { env } from "@/config/env";
 import { ac, roles } from "@/config/permissions";
 import { stripePlans, getPlan } from "@/config/plans";
@@ -98,6 +102,25 @@ export const auth = betterAuth({
       verify: ({ hash, password }) => Bun.password.verify(password, hash),
     },
     minPasswordLength: 6,
+    sendResetPassword: async ({ user, url }) => {
+      await sendResetPasswordEmail({
+        to: user.email,
+        userName: user.name ?? null,
+        resetUrl: url,
+      });
+    },
+  },
+
+  emailVerification: {
+    sendOnSignUp: true,
+    autoSignInAfterVerification: true,
+    sendVerificationEmail: async ({ user, url }) => {
+      await sendVerifyEmail({
+        to: user.email,
+        userName: user.name ?? null,
+        verifyUrl: url,
+      });
+    },
   },
 
   rateLimit: {

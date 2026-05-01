@@ -1,17 +1,133 @@
-import { LayoutDashboard } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { useAuth } from "@/hooks/useAuth";
+import {
+  useActiveOrganization,
+  useActivePlan,
+  useOrganizations,
+} from "@/hooks/useOrganizations";
+import { getPlanDisplay } from "@/lib/plans";
+import {
+  ArrowRight,
+  Building2,
+  CreditCard,
+  Sparkles,
+  Users,
+} from "lucide-react";
+import { Link, useNavigate } from "react-router-dom";
 
 export default function DashboardPage() {
+  const { user } = useAuth();
+  const { data: orgs, isLoading: loadingOrgs } = useOrganizations();
+  const { data: activeOrg } = useActiveOrganization();
+  const planName = useActivePlan();
+  const plan = getPlanDisplay(planName);
+  const navigate = useNavigate();
+
+  // Sem nenhuma organização → onboarding obrigatório
+  if (!loadingOrgs && (orgs?.length ?? 0) === 0) {
+    navigate("/onboarding", { replace: true });
+    return null;
+  }
+
+  const memberCount = activeOrg?.members?.length ?? 1;
+  const orgName = activeOrg?.name ?? orgs?.[0]?.name ?? "—";
+  const PlanIcon = plan.icon;
+
   return (
-    <div className="flex flex-col items-center justify-center h-full gap-4">
-      <div className="flex items-center justify-center size-16 rounded-2xl bg-muted">
-        <LayoutDashboard className="size-8 text-muted-foreground" />
-      </div>
-      <div className="text-center">
-        <h1 className="text-xl font-semibold tracking-tight">Dashboard</h1>
+    <div className="flex flex-col gap-6">
+      <div>
+        <h1 className="text-2xl font-semibold tracking-tight">
+          Olá, {user?.name?.split(" ")[0] ?? "bem-vindo"} 👋
+        </h1>
         <p className="text-sm text-muted-foreground mt-1">
-          Esta página ainda não foi desenvolvida.
+          Aqui está um resumo do que está rolando no useAcolhe.
         </p>
       </div>
+
+      <div className="grid gap-4 md:grid-cols-3">
+        <Card
+          icon={Building2}
+          label="Organização ativa"
+          value={orgName}
+          to="/configuracoes/organizacao"
+        />
+        <Card
+          icon={Users}
+          label="Membros"
+          value={String(memberCount)}
+          to="/configuracoes/membros"
+        />
+        <Card
+          icon={PlanIcon}
+          label="Plano"
+          value={plan.label}
+          to="/configuracoes/billing"
+        />
+      </div>
+
+      <section className="rounded-xl border bg-linear-to-br from-primary/8 via-primary/3 to-secondary/10 p-6">
+        <div className="flex items-start gap-4">
+          <div className="size-12 rounded-lg bg-primary/15 flex items-center justify-center shrink-0">
+            <Sparkles className="size-6 text-primary" />
+          </div>
+          <div className="flex-1">
+            <h2 className="text-lg font-semibold">Validar end-to-end</h2>
+            <p className="text-sm text-muted-foreground mt-1 mb-4">
+              Use estes atalhos para testar o fluxo completo: assinatura,
+              convite e gestão.
+            </p>
+            <div className="flex flex-wrap gap-2">
+              <Link to="/pricing">
+                <Button variant="default" size="sm" className="gap-2">
+                  Ver planos <ArrowRight className="size-4" />
+                </Button>
+              </Link>
+              <Link to="/configuracoes/membros">
+                <Button variant="outline" size="sm" className="gap-2">
+                  Convidar membro <ArrowRight className="size-4" />
+                </Button>
+              </Link>
+              <Link to="/configuracoes/billing">
+                <Button variant="outline" size="sm" className="gap-2">
+                  Gerenciar billing <CreditCard className="size-4" />
+                </Button>
+              </Link>
+            </div>
+          </div>
+        </div>
+      </section>
     </div>
+  );
+}
+
+function Card({
+  icon: Icon,
+  label,
+  value,
+  to,
+}: {
+  icon: typeof Building2;
+  label: string;
+  value: string;
+  to: string;
+}) {
+  return (
+    <Link
+      to={to}
+      className="group rounded-xl border bg-card p-5 hover:border-primary/40 hover:shadow-sm transition-all"
+    >
+      <div className="flex items-center justify-between">
+        <div className="size-9 rounded-lg bg-muted flex items-center justify-center group-hover:bg-primary/10 transition-colors">
+          <Icon className="size-4 text-muted-foreground group-hover:text-primary transition-colors" />
+        </div>
+        <ArrowRight className="size-4 text-muted-foreground/40 group-hover:text-primary group-hover:translate-x-0.5 transition-all" />
+      </div>
+      <div className="mt-4">
+        <div className="text-xs text-muted-foreground uppercase tracking-wide">
+          {label}
+        </div>
+        <div className="text-lg font-semibold mt-1 truncate">{value}</div>
+      </div>
+    </Link>
   );
 }

@@ -1,4 +1,9 @@
-import { LayoutDashboard, Settings } from "lucide-react";
+import {
+  CreditCard,
+  LayoutDashboard,
+  Settings,
+  Sparkles,
+} from "lucide-react";
 
 export const sidebarNav = [
   {
@@ -9,6 +14,11 @@ export const sidebarNav = [
         url: "/",
         icon: LayoutDashboard,
       },
+      {
+        title: "Planos",
+        url: "/pricing",
+        icon: Sparkles,
+      },
     ],
   },
   {
@@ -17,7 +27,17 @@ export const sidebarNav = [
       {
         title: "Configurações",
         icon: Settings,
-        url: "/configuracoes",
+        items: [
+          { title: "Perfil", url: "/configuracoes/perfil" },
+          { title: "Organização", url: "/configuracoes/organizacao" },
+          { title: "Membros", url: "/configuracoes/membros" },
+          { title: "Assinatura", url: "/configuracoes/billing" },
+        ],
+      },
+      {
+        title: "Cobrança",
+        icon: CreditCard,
+        url: "/configuracoes/billing",
       },
     ],
   },
