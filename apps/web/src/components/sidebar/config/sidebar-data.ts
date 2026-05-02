@@ -1,6 +1,8 @@
 import {
   CreditCard,
   LayoutDashboard,
+  LifeBuoy,
+  MessageSquare,
   Settings,
   Sparkles,
 } from "lucide-react";
@@ -28,7 +30,6 @@ export function getSidebarConfig(features: Partial<Features> = {}) {
     ...(features.canViewAuditLogs
       ? [{ title: "Logs", url: "/configuracoes/logs" }]
       : []),
-    { title: "Assinatura", url: "/configuracoes/billing" },
   ];
 
   return {
@@ -53,6 +54,13 @@ export function getSidebarConfig(features: Partial<Features> = {}) {
             icon: CreditCard,
             url: "/configuracoes/billing",
           },
+        ],
+      },
+      {
+        title: "Suporte",
+        items: [
+          { title: "Ajuda", url: "/ajuda", icon: LifeBuoy },
+          { title: "Feedback", url: "/feedback", icon: MessageSquare },
         ],
       },
     ],

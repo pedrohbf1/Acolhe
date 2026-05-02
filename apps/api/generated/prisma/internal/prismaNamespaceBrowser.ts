@@ -61,7 +61,9 @@ export const ModelName = {
   Member: 'Member',
   Invitation: 'Invitation',
   OrganizationRole: 'OrganizationRole',
-  Subscription: 'Subscription'
+  Subscription: 'Subscription',
+  Feedback: 'Feedback',
+  CustomPlan: 'CustomPlan'
 } as const
 
 export type ModelName = (typeof ModelName)[keyof typeof ModelName]
@@ -93,6 +95,9 @@ export const UserScalarFieldEnum = {
   banned: 'banned',
   banReason: 'banReason',
   banExpires: 'banExpires',
+  banObservation: 'banObservation',
+  bannedById: 'bannedById',
+  bannedAt: 'bannedAt',
   stripeCustomerId: 'stripeCustomerId'
 } as const
 
@@ -180,7 +185,12 @@ export const OrganizationScalarFieldEnum = {
   logo: 'logo',
   metadata: 'metadata',
   createdAt: 'createdAt',
-  stripeCustomerId: 'stripeCustomerId'
+  stripeCustomerId: 'stripeCustomerId',
+  banned: 'banned',
+  banReason: 'banReason',
+  banObservation: 'banObservation',
+  bannedAt: 'bannedAt',
+  bannedById: 'bannedById'
 } as const
 
 export type OrganizationScalarFieldEnum = (typeof OrganizationScalarFieldEnum)[keyof typeof OrganizationScalarFieldEnum]
@@ -244,6 +254,46 @@ export const SubscriptionScalarFieldEnum = {
 } as const
 
 export type SubscriptionScalarFieldEnum = (typeof SubscriptionScalarFieldEnum)[keyof typeof SubscriptionScalarFieldEnum]
+
+
+export const FeedbackScalarFieldEnum = {
+  id: 'id',
+  userId: 'userId',
+  type: 'type',
+  subject: 'subject',
+  message: 'message',
+  status: 'status',
+  adminNote: 'adminNote',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type FeedbackScalarFieldEnum = (typeof FeedbackScalarFieldEnum)[keyof typeof FeedbackScalarFieldEnum]
+
+
+export const CustomPlanScalarFieldEnum = {
+  id: 'id',
+  userId: 'userId',
+  name: 'name',
+  notes: 'notes',
+  stripeProductId: 'stripeProductId',
+  stripePriceMonthly: 'stripePriceMonthly',
+  stripePriceYearly: 'stripePriceYearly',
+  stripeSubscriptionId: 'stripeSubscriptionId',
+  stripeStatus: 'stripeStatus',
+  monthlyPriceBRL: 'monthlyPriceBRL',
+  yearlyPriceBRL: 'yearlyPriceBRL',
+  maxOrganizations: 'maxOrganizations',
+  maxPatients: 'maxPatients',
+  maxMembers: 'maxMembers',
+  auditLog: 'auditLog',
+  customRoles: 'customRoles',
+  createdById: 'createdById',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type CustomPlanScalarFieldEnum = (typeof CustomPlanScalarFieldEnum)[keyof typeof CustomPlanScalarFieldEnum]
 
 
 export const SortOrder = {

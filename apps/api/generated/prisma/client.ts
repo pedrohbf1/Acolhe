@@ -96,3 +96,13 @@ export type OrganizationRole = Prisma.OrganizationRoleModel
  * 
  */
 export type Subscription = Prisma.SubscriptionModel
+/**
+ * Model Feedback
+ * 
+ */
+export type Feedback = Prisma.FeedbackModel
+/**
+ * Model CustomPlan
+ * 
+ */
+export type CustomPlan = Prisma.CustomPlanModel

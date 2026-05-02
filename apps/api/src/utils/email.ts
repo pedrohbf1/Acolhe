@@ -3,6 +3,21 @@ import { env } from "@/config/env";
 
 export const resend = new Resend(env.RESEND_API_KEY);
 
+/**
+ * Resend não joga exception em falha — retorna `{ data, error }`. Esse wrapper
+ * normaliza pra que erros virem exception (e o controller responda 5xx com a
+ * mensagem real, em vez de "ok" mascarado).
+ */
+async function send(options: Parameters<typeof resend.emails.send>[0]) {
+  const result = await resend.emails.send(options);
+  if (result.error) {
+    const msg = result.error.message ?? "Falha ao enviar e-mail";
+    console.error("[email] Resend error:", result.error);
+    throw new Error(msg);
+  }
+  return result.data;
+}
+
 // ─── Layout helper ───────────────────────────────────────────────────────────
 
 function shell(opts: {
@@ -61,7 +76,7 @@ type InvitationEmailParams = {
 };
 
 export function sendOrganizationInvitationEmail(p: InvitationEmailParams) {
-  return resend.emails.send({
+  return send({
     from: env.RESEND_FROM_EMAIL,
     to: p.to,
     subject: `${p.inviterName} convidou você para ${p.organizationName}`,
@@ -84,7 +99,7 @@ type ResetPasswordParams = {
 };
 
 export function sendResetPasswordEmail(p: ResetPasswordParams) {
-  return resend.emails.send({
+  return send({
     from: env.RESEND_FROM_EMAIL,
     to: p.to,
     subject: "Redefinir sua senha — useAcolhe",
@@ -103,6 +118,69 @@ export function sendResetPasswordEmail(p: ResetPasswordParams) {
   });
 }
 
+type FeedbackEmailParams = {
+  to: string;
+  fromUserName: string;
+  fromUserEmail: string;
+  type: string;
+  subject: string;
+  message: string;
+};
+
+export function sendFeedbackEmail(p: FeedbackEmailParams) {
+  const safeMessage = escapeHtml(p.message).replace(/\n/g, "<br>");
+  return send({
+    from: env.RESEND_FROM_EMAIL,
+    to: p.to,
+    replyTo: p.fromUserEmail,
+    subject: `[Feedback ${p.type}] ${p.subject}`,
+    html: `
+<!doctype html>
+<html lang="pt-BR">
+  <body style="margin:0;padding:0;background:#f5f5f5;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;">
+    <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" style="background:#f5f5f5;padding:40px 16px;">
+      <tr><td align="center">
+        <table role="presentation" width="560" cellpadding="0" cellspacing="0" border="0" style="background:#fff;border-radius:14px;padding:32px 36px;max-width:560px;">
+          <tr><td>
+            <div style="font-size:11px;letter-spacing:.18em;text-transform:uppercase;color:#888;margin-bottom:14px;">useAcolhe · feedback</div>
+            <span style="display:inline-block;padding:4px 10px;border-radius:6px;background:#111;color:#fff;font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:.05em;">${escapeHtml(p.type)}</span>
+            <h1 style="font-size:20px;margin:14px 0 6px;color:#111;line-height:1.3;">${escapeHtml(p.subject)}</h1>
+            <p style="font-size:13px;color:#666;margin:0 0 22px;">de <strong>${escapeHtml(p.fromUserName)}</strong> &lt;${escapeHtml(p.fromUserEmail)}&gt;</p>
+            <div style="font-size:15px;line-height:1.65;color:#222;background:#fafafa;border:1px solid #eee;border-radius:8px;padding:18px;">${safeMessage}</div>
+            <p style="font-size:12px;color:#888;margin:24px 0 0;line-height:1.6;">Responda direto este e-mail para falar com o usuário.</p>
+          </td></tr>
+        </table>
+      </td></tr>
+    </table>
+  </body>
+</html>`,
+  });
+}
+
+type FeedbackThankYouParams = {
+  to: string;
+  userName: string;
+  type: string;
+  subject: string;
+};
+
+export function sendFeedbackThankYouEmail(p: FeedbackThankYouParams) {
+  return send({
+    from: env.RESEND_FROM_EMAIL,
+    to: p.to,
+    subject: "Recebemos seu feedback — useAcolhe",
+    html: shell({
+      title: "Obrigado pelo feedback!",
+      preheader: `Recebemos seu ${p.type.toLowerCase()}: "${p.subject}"`,
+      intro: `Olá <strong>${escapeHtml(p.userName)}</strong>, recebemos seu <strong>${escapeHtml(p.type.toLowerCase())}</strong> e leio pessoalmente cada mensagem.`,
+      body: `Sobre <em>"${escapeHtml(p.subject)}"</em> — se for um caso que precisa de resposta, te chamo de volta neste e-mail nos próximos dias úteis. Sua opinião faz o useAcolhe melhor.`,
+      ctaLabel: "Voltar ao app",
+      ctaUrl: env.SITE_URL,
+      outro: "Se quiser adicionar algo, é só responder este e-mail.",
+    }),
+  });
+}
+
 type VerifyEmailParams = {
   to: string;
   userName?: string | null;
@@ -110,7 +188,7 @@ type VerifyEmailParams = {
 };
 
 export function sendVerifyEmail(p: VerifyEmailParams) {
-  return resend.emails.send({
+  return send({
     from: env.RESEND_FROM_EMAIL,
     to: p.to,
     subject: "Confirme seu e-mail — useAcolhe",

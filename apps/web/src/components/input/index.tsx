@@ -46,6 +46,12 @@ export interface SelectConfig {
   creatable?: {
     onRequest: (typedValue: string) => void;
   };
+  /**
+   * Quando true, o componente vira um select tradicional: clicar abre a lista
+   * inteira (sem filtrar pelo texto atual) e o input fica readonly. Útil
+   * quando você quer um dropdown de seleção fixa, não um combobox com busca.
+   */
+  notFilter?: boolean;
 }
 
 // ─── Props ────────────────────────────────────────────────────────────────────
@@ -121,14 +127,19 @@ export default function Input({
     }
   }, [selectValue, dropOpen, labelFor]);
 
-  const filtered = opts.filter((o) =>
-    o.label.toLowerCase().includes(filterText.toLowerCase()),
-  );
+  const filtered = select?.notFilter
+    ? opts
+    : opts.filter((o) =>
+        o.label.toLowerCase().includes(filterText.toLowerCase()),
+      );
   const exactMatch = opts.some(
     (o) => o.label.toLowerCase() === filterText.trim().toLowerCase(),
   );
   const showCreate =
-    select?.creatable != null && filterText.trim().length > 0 && !exactMatch;
+    !select?.notFilter &&
+    select?.creatable != null &&
+    filterText.trim().length > 0 &&
+    !exactMatch;
   const totalDrop = filtered.length + (showCreate ? 1 : 0);
 
   const openDrop = useCallback(() => {
@@ -188,6 +199,8 @@ export default function Input({
 
   const handleChange = (e: ChangeEvent<HTMLInputElement>) => {
     if (select) {
+      // notFilter: select tradicional — ignora digitação
+      if (select.notFilter) return;
       setFilterText(e.target.value);
       setDropIndex(-1);
       if (!dropOpen) {
@@ -356,10 +369,11 @@ export default function Input({
             value={filterText}
             placeholder=" "
             autoComplete="off"
+            readOnly={select.notFilter}
             onChange={handleChange}
             onKeyDown={handleKeyDown}
             onClick={openDrop}
-            className={`peer w-full border border-border rounded-lg p-3 pr-9 focus:outline-none focus:ring-1 focus:ring-primary focus:border-primary ${className?.classNameInput ?? ""}`}
+            className={`peer w-full border border-border rounded-lg p-3 pr-9 focus:outline-none focus:ring-1 focus:ring-primary focus:border-primary ${select.notFilter ? "cursor-pointer caret-transparent select-none" : ""} ${className?.classNameInput ?? ""}`}
           />
           {loading ? (
             <Loader2Icon

@@ -22,7 +22,14 @@ export interface User {
   email: string;
   emailVerified: boolean;
   image?: string | null;
+  /** "user" | "admin" | "super_admin" — vem do banco. */
   role?: string | null;
+  /** Estado de banimento (super_admin baniu). */
+  banned?: boolean | null;
+  banReason?: string | null;
+  banObservation?: string | null;
+  banExpires?: string | null;
+  bannedAt?: string | null;
   createdAt: string;
   updatedAt: string;
 }

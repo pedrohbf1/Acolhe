@@ -2,7 +2,6 @@ import { cn } from "@/lib/utils";
 import { usePlanFeatures } from "@/hooks/usePlanFeatures";
 import {
   Building2,
-  CreditCard,
   ListChecks,
   Scroll,
   ShieldCheck,
@@ -15,36 +14,40 @@ export default function SettingsLayout() {
   const features = usePlanFeatures();
 
   const tabs = [
-    { to: "/configuracoes/perfil", label: "Perfil", icon: User, show: true },
+    {
+      to: "/configuracoes/perfil",
+      label: "Perfil",
+      icon: User,
+      show: true,
+      end: true,
+    },
     {
       to: "/configuracoes/organizacao",
       label: "Organização",
       icon: Building2,
       show: true,
+      end: false,
     },
     {
       to: "/configuracoes/membros",
       label: "Membros",
       icon: Users,
       show: features.canManageMembers,
+      end: true,
     },
     {
       to: "/configuracoes/cargos",
       label: "Cargos",
       icon: ShieldCheck,
       show: features.canManageRoles,
+      end: true,
     },
     {
       to: "/configuracoes/logs",
       label: "Logs",
       icon: Scroll,
       show: features.canViewAuditLogs,
-    },
-    {
-      to: "/configuracoes/billing",
-      label: "Assinatura",
-      icon: CreditCard,
-      show: true,
+      end: true,
     },
   ].filter((t) => t.show);
 
@@ -65,7 +68,7 @@ export default function SettingsLayout() {
               <NavLink
                 key={t.to}
                 to={t.to}
-                end
+                end={t.end}
                 className={({ isActive }) =>
                   cn(
                     "flex items-center gap-2 px-3 py-2 rounded-lg text-sm font-medium transition-colors whitespace-nowrap",

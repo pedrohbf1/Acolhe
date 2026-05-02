@@ -24,6 +24,26 @@ export function useActiveOrganization() {
   });
 }
 
+/**
+ * Busca uma organização específica (com membros) — usado pra ver detalhes de
+ * uma org sem precisar torná-la ativa.
+ */
+export function useOrganization(orgId: string | undefined) {
+  return useQuery({
+    queryKey: ["organization", "byId", orgId],
+    queryFn: async () => {
+      if (!orgId) return null;
+      const res = await authClient.organization.getFullOrganization({
+        query: { organizationId: orgId },
+      });
+      if ("error" in res && res.error) return null;
+      return "data" in res ? res.data : null;
+    },
+    enabled: !!orgId,
+    retry: false,
+  });
+}
+
 export function useSubscriptions() {
   return useQuery({
     queryKey: ["subscriptions"],

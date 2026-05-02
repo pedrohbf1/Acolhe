@@ -394,7 +394,9 @@ export const ModelName = {
   Member: 'Member',
   Invitation: 'Invitation',
   OrganizationRole: 'OrganizationRole',
-  Subscription: 'Subscription'
+  Subscription: 'Subscription',
+  Feedback: 'Feedback',
+  CustomPlan: 'CustomPlan'
 } as const
 
 export type ModelName = (typeof ModelName)[keyof typeof ModelName]
@@ -410,7 +412,7 @@ export type TypeMap<ExtArgs extends runtime.Types.Extensions.InternalArgs = runt
     omit: GlobalOmitOptions
   }
   meta: {
-    modelProps: "user" | "session" | "account" | "verification" | "auditLog" | "appSetting" | "organization" | "member" | "invitation" | "organizationRole" | "subscription"
+    modelProps: "user" | "session" | "account" | "verification" | "auditLog" | "appSetting" | "organization" | "member" | "invitation" | "organizationRole" | "subscription" | "feedback" | "customPlan"
     txIsolationLevel: TransactionIsolationLevel
   }
   model: {
@@ -1228,6 +1230,154 @@ export type TypeMap<ExtArgs extends runtime.Types.Extensions.InternalArgs = runt
         }
       }
     }
+    Feedback: {
+      payload: Prisma.$FeedbackPayload<ExtArgs>
+      fields: Prisma.FeedbackFieldRefs
+      operations: {
+        findUnique: {
+          args: Prisma.FeedbackFindUniqueArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$FeedbackPayload> | null
+        }
+        findUniqueOrThrow: {
+          args: Prisma.FeedbackFindUniqueOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$FeedbackPayload>
+        }
+        findFirst: {
+          args: Prisma.FeedbackFindFirstArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$FeedbackPayload> | null
+        }
+        findFirstOrThrow: {
+          args: Prisma.FeedbackFindFirstOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$FeedbackPayload>
+        }
+        findMany: {
+          args: Prisma.FeedbackFindManyArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$FeedbackPayload>[]
+        }
+        create: {
+          args: Prisma.FeedbackCreateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$FeedbackPayload>
+        }
+        createMany: {
+          args: Prisma.FeedbackCreateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        createManyAndReturn: {
+          args: Prisma.FeedbackCreateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$FeedbackPayload>[]
+        }
+        delete: {
+          args: Prisma.FeedbackDeleteArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$FeedbackPayload>
+        }
+        update: {
+          args: Prisma.FeedbackUpdateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$FeedbackPayload>
+        }
+        deleteMany: {
+          args: Prisma.FeedbackDeleteManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateMany: {
+          args: Prisma.FeedbackUpdateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateManyAndReturn: {
+          args: Prisma.FeedbackUpdateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$FeedbackPayload>[]
+        }
+        upsert: {
+          args: Prisma.FeedbackUpsertArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$FeedbackPayload>
+        }
+        aggregate: {
+          args: Prisma.FeedbackAggregateArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.AggregateFeedback>
+        }
+        groupBy: {
+          args: Prisma.FeedbackGroupByArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.FeedbackGroupByOutputType>[]
+        }
+        count: {
+          args: Prisma.FeedbackCountArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.FeedbackCountAggregateOutputType> | number
+        }
+      }
+    }
+    CustomPlan: {
+      payload: Prisma.$CustomPlanPayload<ExtArgs>
+      fields: Prisma.CustomPlanFieldRefs
+      operations: {
+        findUnique: {
+          args: Prisma.CustomPlanFindUniqueArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$CustomPlanPayload> | null
+        }
+        findUniqueOrThrow: {
+          args: Prisma.CustomPlanFindUniqueOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$CustomPlanPayload>
+        }
+        findFirst: {
+          args: Prisma.CustomPlanFindFirstArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$CustomPlanPayload> | null
+        }
+        findFirstOrThrow: {
+          args: Prisma.CustomPlanFindFirstOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$CustomPlanPayload>
+        }
+        findMany: {
+          args: Prisma.CustomPlanFindManyArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$CustomPlanPayload>[]
+        }
+        create: {
+          args: Prisma.CustomPlanCreateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$CustomPlanPayload>
+        }
+        createMany: {
+          args: Prisma.CustomPlanCreateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        createManyAndReturn: {
+          args: Prisma.CustomPlanCreateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$CustomPlanPayload>[]
+        }
+        delete: {
+          args: Prisma.CustomPlanDeleteArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$CustomPlanPayload>
+        }
+        update: {
+          args: Prisma.CustomPlanUpdateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$CustomPlanPayload>
+        }
+        deleteMany: {
+          args: Prisma.CustomPlanDeleteManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateMany: {
+          args: Prisma.CustomPlanUpdateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateManyAndReturn: {
+          args: Prisma.CustomPlanUpdateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$CustomPlanPayload>[]
+        }
+        upsert: {
+          args: Prisma.CustomPlanUpsertArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$CustomPlanPayload>
+        }
+        aggregate: {
+          args: Prisma.CustomPlanAggregateArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.AggregateCustomPlan>
+        }
+        groupBy: {
+          args: Prisma.CustomPlanGroupByArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.CustomPlanGroupByOutputType>[]
+        }
+        count: {
+          args: Prisma.CustomPlanCountArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.CustomPlanCountAggregateOutputType> | number
+        }
+      }
+    }
   }
 } & {
   other: {
@@ -1280,6 +1430,9 @@ export const UserScalarFieldEnum = {
   banned: 'banned',
   banReason: 'banReason',
   banExpires: 'banExpires',
+  banObservation: 'banObservation',
+  bannedById: 'bannedById',
+  bannedAt: 'bannedAt',
   stripeCustomerId: 'stripeCustomerId'
 } as const
 
@@ -1367,7 +1520,12 @@ export const OrganizationScalarFieldEnum = {
   logo: 'logo',
   metadata: 'metadata',
   createdAt: 'createdAt',
-  stripeCustomerId: 'stripeCustomerId'
+  stripeCustomerId: 'stripeCustomerId',
+  banned: 'banned',
+  banReason: 'banReason',
+  banObservation: 'banObservation',
+  bannedAt: 'bannedAt',
+  bannedById: 'bannedById'
 } as const
 
 export type OrganizationScalarFieldEnum = (typeof OrganizationScalarFieldEnum)[keyof typeof OrganizationScalarFieldEnum]
@@ -1431,6 +1589,46 @@ export const SubscriptionScalarFieldEnum = {
 } as const
 
 export type SubscriptionScalarFieldEnum = (typeof SubscriptionScalarFieldEnum)[keyof typeof SubscriptionScalarFieldEnum]
+
+
+export const FeedbackScalarFieldEnum = {
+  id: 'id',
+  userId: 'userId',
+  type: 'type',
+  subject: 'subject',
+  message: 'message',
+  status: 'status',
+  adminNote: 'adminNote',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type FeedbackScalarFieldEnum = (typeof FeedbackScalarFieldEnum)[keyof typeof FeedbackScalarFieldEnum]
+
+
+export const CustomPlanScalarFieldEnum = {
+  id: 'id',
+  userId: 'userId',
+  name: 'name',
+  notes: 'notes',
+  stripeProductId: 'stripeProductId',
+  stripePriceMonthly: 'stripePriceMonthly',
+  stripePriceYearly: 'stripePriceYearly',
+  stripeSubscriptionId: 'stripeSubscriptionId',
+  stripeStatus: 'stripeStatus',
+  monthlyPriceBRL: 'monthlyPriceBRL',
+  yearlyPriceBRL: 'yearlyPriceBRL',
+  maxOrganizations: 'maxOrganizations',
+  maxPatients: 'maxPatients',
+  maxMembers: 'maxMembers',
+  auditLog: 'auditLog',
+  customRoles: 'customRoles',
+  createdById: 'createdById',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type CustomPlanScalarFieldEnum = (typeof CustomPlanScalarFieldEnum)[keyof typeof CustomPlanScalarFieldEnum]
 
 
 export const SortOrder = {
@@ -1677,6 +1875,8 @@ export type GlobalOmitConfig = {
   invitation?: Prisma.InvitationOmit
   organizationRole?: Prisma.OrganizationRoleOmit
   subscription?: Prisma.SubscriptionOmit
+  feedback?: Prisma.FeedbackOmit
+  customPlan?: Prisma.CustomPlanOmit
 }
 
 /* Types for Logging */

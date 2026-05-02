@@ -18,6 +18,10 @@ out
 .env.*.local
 !.env.example
 
+# keys & admin secrets — pasta inteira nunca vai pro repo
+keys/
+**/keys/
+
 # logs
 *.log
 npm-debug.log*
@@ -38,3 +42,4 @@ Thumbs.db
 
 # prisma
 **/prisma/migrations/dev.db*
+docs

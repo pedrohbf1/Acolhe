@@ -25,10 +25,46 @@ const stripeClient = new Stripe(env.STRIPE_SECRET_KEY, {
 });
 
 /**
- * Plano ativo do usuário. Sem assinatura ativa/trialing → free.
- * Usado para enforcement do `organizationLimit`.
+ * Plano ativo do usuário.
+ *
+ * Prioridade:
+ *   1. Custom plan (super_admin definiu pra esse cliente)
+ *   2. Stripe subscription ativa/trialing
+ *   3. Free
+ *
+ * Custom plans bypassam o Stripe: cobrança é manual, mas os limites valem.
  */
 async function getUserActivePlan(userId: string) {
+  // 1. Custom plan tem prioridade (relação 1:1, Stripe sub gerenciada à parte)
+  const customPlan = await prisma.customPlan.findUnique({
+    where: { userId },
+    select: {
+      maxOrganizations: true,
+      maxPatients: true,
+      maxMembers: true,
+      auditLog: true,
+      customRoles: true,
+    },
+  });
+
+  if (customPlan) {
+    return {
+      name: "custom" as const,
+      priceId: null,
+      trialDays: 0,
+      limits: {
+        maxOrganizations: customPlan.maxOrganizations,
+        maxPatients: customPlan.maxPatients,
+        maxMembers: customPlan.maxMembers,
+      },
+      features: {
+        auditLog: customPlan.auditLog,
+        customRoles: customPlan.customRoles,
+      },
+    };
+  }
+
+  // 2. Stripe subscription regular
   const sub = await prisma.subscription.findFirst({
     where: {
       referenceId: userId,
@@ -55,6 +91,23 @@ export const auth = betterAuth({
   database: prismaAdapter(prisma, {
     provider: "postgresql",
   }),
+
+  // Campos extras do user que viajam no payload de session (pro front saber
+  // se o usuário foi banido e mostrar a tela com motivo+observação).
+  user: {
+    additionalFields: {
+      banObservation: {
+        type: "string",
+        required: false,
+        input: false, // não pode ser setado via API normal — só pelo super_admin
+      },
+      bannedAt: {
+        type: "date",
+        required: false,
+        input: false,
+      },
+    },
+  },
 
   // Hook de banco: depois que o usuário é criado, crio uma org "Meu consultório"
   // e adiciono ele como owner. Isso esconde o conceito de org pra usuários
@@ -139,6 +192,40 @@ export const auth = betterAuth({
       // auditPlugin HTTP ignora /api/auth). Cada hook anota quem fez, em qual
       // org, e o conteúdo relevante.
       organizationHooks: {
+        // Enforça maxMembers do plano do owner. Conta members atuais + convites
+        // pendentes pra evitar burlar (criar 10 convites num plano de 2 membros).
+        beforeCreateInvitation: async ({ organization, inviter }) => {
+          const owners = await prisma.member.findMany({
+            where: {
+              organizationId: organization.id,
+              role: { contains: "owner" },
+            },
+            select: { userId: true },
+          });
+          const ownerId = owners[0]?.userId ?? inviter.userId ?? inviter.id;
+
+          const sub = await prisma.subscription.findFirst({
+            where: {
+              referenceId: ownerId,
+              status: { in: ["active", "trialing"] },
+            },
+          });
+          const plan = getPlan(sub?.plan ?? "free");
+
+          const [memberCount, pendingInvites] = await Promise.all([
+            prisma.member.count({ where: { organizationId: organization.id } }),
+            prisma.invitation.count({
+              where: { organizationId: organization.id, status: "pending" },
+            }),
+          ]);
+
+          const used = memberCount + pendingInvites;
+          if (used >= plan.limits.maxMembers) {
+            throw new Error(
+              `Limite de membros atingido (${plan.limits.maxMembers}). Faça upgrade pra liberar mais convites.`,
+            );
+          }
+        },
         afterCreateOrganization: async ({ organization, user }) => {
           await auditLogRepository.create({
             userId: user.id,

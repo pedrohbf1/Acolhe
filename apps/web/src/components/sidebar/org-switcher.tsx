@@ -1,6 +1,7 @@
 import {
   DropdownMenu,
   DropdownMenuContent,
+  DropdownMenuGroup,
   DropdownMenuItem,
   DropdownMenuLabel,
   DropdownMenuSeparator,
@@ -18,9 +19,8 @@ import {
   useOrganizations,
 } from "@/hooks/useOrganizations";
 import { usePlanFeatures } from "@/hooks/usePlanFeatures";
-import { authClient } from "@/lib/auth-client";
+import { useSwitchOrganization } from "@/hooks/useSwitchOrganization";
 import { getPlanDisplay } from "@/lib/plans";
-import { useQueryClient } from "@tanstack/react-query";
 import {
   Building2,
   Check,
@@ -30,7 +30,6 @@ import {
   Sparkles,
 } from "lucide-react";
 import { useNavigate } from "react-router-dom";
-import { toast } from "sonner";
 
 export function OrgSwitcher() {
   const { state, isMobile } = useSidebar();
@@ -39,20 +38,8 @@ export function OrgSwitcher() {
   const planName = useActivePlan();
   const plan = getPlanDisplay(planName);
   const features = usePlanFeatures();
-  const qc = useQueryClient();
   const navigate = useNavigate();
-
-  const setActive = async (orgId: string) => {
-    const res = await authClient.organization.setActive({
-      organizationId: orgId,
-    });
-    if ("error" in res && res.error) {
-      toast.error(res.error.message ?? "Erro ao trocar de organização");
-      return;
-    }
-    qc.invalidateQueries({ queryKey: ["organization", "active"] });
-    qc.invalidateQueries({ queryKey: ["session"] });
-  };
+  const switchOrg = useSwitchOrganization();
 
   const orgName = active?.name ?? orgs[0]?.name ?? "Carregando…";
 
@@ -104,23 +91,28 @@ export function OrgSwitcher() {
           >
             {orgs.length > 0 && (
               <>
-                <DropdownMenuLabel className="text-xs text-muted-foreground">
-                  {orgs.length === 1 ? "Sua organização" : "Suas organizações"}
-                </DropdownMenuLabel>
-                {orgs.map((o) => {
-                  const isActive = active?.id === o.id;
-                  return (
-                    <DropdownMenuItem
-                      key={o.id}
-                      onClick={() => !isActive && setActive(o.id)}
-                      className="gap-2"
-                    >
-                      <Building2 className="size-4 text-muted-foreground" />
-                      <span className="flex-1 truncate">{o.name}</span>
-                      {isActive && <Check className="size-4 text-primary" />}
-                    </DropdownMenuItem>
-                  );
-                })}
+                <DropdownMenuGroup>
+                  <DropdownMenuLabel className="text-xs text-muted-foreground">
+                    {orgs.length === 1
+                      ? "Sua organização"
+                      : "Suas organizações"}
+                  </DropdownMenuLabel>
+                  {orgs.map((o) => {
+                    const isActive = active?.id === o.id;
+                    return (
+                      <DropdownMenuItem
+                        key={o.id}
+                        onClick={() => !isActive && switchOrg.mutate(o.id)}
+                        disabled={switchOrg.isPending}
+                        className="gap-2"
+                      >
+                        <Building2 className="size-4 text-muted-foreground" />
+                        <span className="flex-1 truncate">{o.name}</span>
+                        {isActive && <Check className="size-4 text-primary" />}
+                      </DropdownMenuItem>
+                    );
+                  })}
+                </DropdownMenuGroup>
                 <DropdownMenuSeparator />
               </>
             )}

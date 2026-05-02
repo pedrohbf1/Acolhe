@@ -32,6 +32,11 @@ export type OrganizationMinAggregateOutputType = {
   metadata: string | null
   createdAt: Date | null
   stripeCustomerId: string | null
+  banned: boolean | null
+  banReason: string | null
+  banObservation: string | null
+  bannedAt: Date | null
+  bannedById: string | null
 }
 
 export type OrganizationMaxAggregateOutputType = {
@@ -42,6 +47,11 @@ export type OrganizationMaxAggregateOutputType = {
   metadata: string | null
   createdAt: Date | null
   stripeCustomerId: string | null
+  banned: boolean | null
+  banReason: string | null
+  banObservation: string | null
+  bannedAt: Date | null
+  bannedById: string | null
 }
 
 export type OrganizationCountAggregateOutputType = {
@@ -52,6 +62,11 @@ export type OrganizationCountAggregateOutputType = {
   metadata: number
   createdAt: number
   stripeCustomerId: number
+  banned: number
+  banReason: number
+  banObservation: number
+  bannedAt: number
+  bannedById: number
   _all: number
 }
 
@@ -64,6 +79,11 @@ export type OrganizationMinAggregateInputType = {
   metadata?: true
   createdAt?: true
   stripeCustomerId?: true
+  banned?: true
+  banReason?: true
+  banObservation?: true
+  bannedAt?: true
+  bannedById?: true
 }
 
 export type OrganizationMaxAggregateInputType = {
@@ -74,6 +94,11 @@ export type OrganizationMaxAggregateInputType = {
   metadata?: true
   createdAt?: true
   stripeCustomerId?: true
+  banned?: true
+  banReason?: true
+  banObservation?: true
+  bannedAt?: true
+  bannedById?: true
 }
 
 export type OrganizationCountAggregateInputType = {
@@ -84,6 +109,11 @@ export type OrganizationCountAggregateInputType = {
   metadata?: true
   createdAt?: true
   stripeCustomerId?: true
+  banned?: true
+  banReason?: true
+  banObservation?: true
+  bannedAt?: true
+  bannedById?: true
   _all?: true
 }
 
@@ -167,6 +197,11 @@ export type OrganizationGroupByOutputType = {
   metadata: string | null
   createdAt: Date
   stripeCustomerId: string | null
+  banned: boolean
+  banReason: string | null
+  banObservation: string | null
+  bannedAt: Date | null
+  bannedById: string | null
   _count: OrganizationCountAggregateOutputType | null
   _min: OrganizationMinAggregateOutputType | null
   _max: OrganizationMaxAggregateOutputType | null
@@ -198,6 +233,11 @@ export type OrganizationWhereInput = {
   metadata?: Prisma.StringNullableFilter<"Organization"> | string | null
   createdAt?: Prisma.DateTimeFilter<"Organization"> | Date | string
   stripeCustomerId?: Prisma.StringNullableFilter<"Organization"> | string | null
+  banned?: Prisma.BoolFilter<"Organization"> | boolean
+  banReason?: Prisma.StringNullableFilter<"Organization"> | string | null
+  banObservation?: Prisma.StringNullableFilter<"Organization"> | string | null
+  bannedAt?: Prisma.DateTimeNullableFilter<"Organization"> | Date | string | null
+  bannedById?: Prisma.StringNullableFilter<"Organization"> | string | null
   members?: Prisma.MemberListRelationFilter
   invitations?: Prisma.InvitationListRelationFilter
   organizationRoles?: Prisma.OrganizationRoleListRelationFilter
@@ -212,6 +252,11 @@ export type OrganizationOrderByWithRelationInput = {
   metadata?: Prisma.SortOrderInput | Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   stripeCustomerId?: Prisma.SortOrderInput | Prisma.SortOrder
+  banned?: Prisma.SortOrder
+  banReason?: Prisma.SortOrderInput | Prisma.SortOrder
+  banObservation?: Prisma.SortOrderInput | Prisma.SortOrder
+  bannedAt?: Prisma.SortOrderInput | Prisma.SortOrder
+  bannedById?: Prisma.SortOrderInput | Prisma.SortOrder
   members?: Prisma.MemberOrderByRelationAggregateInput
   invitations?: Prisma.InvitationOrderByRelationAggregateInput
   organizationRoles?: Prisma.OrganizationRoleOrderByRelationAggregateInput
@@ -229,6 +274,11 @@ export type OrganizationWhereUniqueInput = Prisma.AtLeast<{
   logo?: Prisma.StringNullableFilter<"Organization"> | string | null
   metadata?: Prisma.StringNullableFilter<"Organization"> | string | null
   createdAt?: Prisma.DateTimeFilter<"Organization"> | Date | string
+  banned?: Prisma.BoolFilter<"Organization"> | boolean
+  banReason?: Prisma.StringNullableFilter<"Organization"> | string | null
+  banObservation?: Prisma.StringNullableFilter<"Organization"> | string | null
+  bannedAt?: Prisma.DateTimeNullableFilter<"Organization"> | Date | string | null
+  bannedById?: Prisma.StringNullableFilter<"Organization"> | string | null
   members?: Prisma.MemberListRelationFilter
   invitations?: Prisma.InvitationListRelationFilter
   organizationRoles?: Prisma.OrganizationRoleListRelationFilter
@@ -243,6 +293,11 @@ export type OrganizationOrderByWithAggregationInput = {
   metadata?: Prisma.SortOrderInput | Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   stripeCustomerId?: Prisma.SortOrderInput | Prisma.SortOrder
+  banned?: Prisma.SortOrder
+  banReason?: Prisma.SortOrderInput | Prisma.SortOrder
+  banObservation?: Prisma.SortOrderInput | Prisma.SortOrder
+  bannedAt?: Prisma.SortOrderInput | Prisma.SortOrder
+  bannedById?: Prisma.SortOrderInput | Prisma.SortOrder
   _count?: Prisma.OrganizationCountOrderByAggregateInput
   _max?: Prisma.OrganizationMaxOrderByAggregateInput
   _min?: Prisma.OrganizationMinOrderByAggregateInput
@@ -259,6 +314,11 @@ export type OrganizationScalarWhereWithAggregatesInput = {
   metadata?: Prisma.StringNullableWithAggregatesFilter<"Organization"> | string | null
   createdAt?: Prisma.DateTimeWithAggregatesFilter<"Organization"> | Date | string
   stripeCustomerId?: Prisma.StringNullableWithAggregatesFilter<"Organization"> | string | null
+  banned?: Prisma.BoolWithAggregatesFilter<"Organization"> | boolean
+  banReason?: Prisma.StringNullableWithAggregatesFilter<"Organization"> | string | null
+  banObservation?: Prisma.StringNullableWithAggregatesFilter<"Organization"> | string | null
+  bannedAt?: Prisma.DateTimeNullableWithAggregatesFilter<"Organization"> | Date | string | null
+  bannedById?: Prisma.StringNullableWithAggregatesFilter<"Organization"> | string | null
 }
 
 export type OrganizationCreateInput = {
@@ -269,6 +329,11 @@ export type OrganizationCreateInput = {
   metadata?: string | null
   createdAt?: Date | string
   stripeCustomerId?: string | null
+  banned?: boolean
+  banReason?: string | null
+  banObservation?: string | null
+  bannedAt?: Date | string | null
+  bannedById?: string | null
   members?: Prisma.MemberCreateNestedManyWithoutOrganizationInput
   invitations?: Prisma.InvitationCreateNestedManyWithoutOrganizationInput
   organizationRoles?: Prisma.OrganizationRoleCreateNestedManyWithoutOrganizationInput
@@ -283,6 +348,11 @@ export type OrganizationUncheckedCreateInput = {
   metadata?: string | null
   createdAt?: Date | string
   stripeCustomerId?: string | null
+  banned?: boolean
+  banReason?: string | null
+  banObservation?: string | null
+  bannedAt?: Date | string | null
+  bannedById?: string | null
   members?: Prisma.MemberUncheckedCreateNestedManyWithoutOrganizationInput
   invitations?: Prisma.InvitationUncheckedCreateNestedManyWithoutOrganizationInput
   organizationRoles?: Prisma.OrganizationRoleUncheckedCreateNestedManyWithoutOrganizationInput
@@ -297,6 +367,11 @@ export type OrganizationUpdateInput = {
   metadata?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   stripeCustomerId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  banned?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  banReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  banObservation?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  bannedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  bannedById?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   members?: Prisma.MemberUpdateManyWithoutOrganizationNestedInput
   invitations?: Prisma.InvitationUpdateManyWithoutOrganizationNestedInput
   organizationRoles?: Prisma.OrganizationRoleUpdateManyWithoutOrganizationNestedInput
@@ -311,6 +386,11 @@ export type OrganizationUncheckedUpdateInput = {
   metadata?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   stripeCustomerId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  banned?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  banReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  banObservation?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  bannedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  bannedById?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   members?: Prisma.MemberUncheckedUpdateManyWithoutOrganizationNestedInput
   invitations?: Prisma.InvitationUncheckedUpdateManyWithoutOrganizationNestedInput
   organizationRoles?: Prisma.OrganizationRoleUncheckedUpdateManyWithoutOrganizationNestedInput
@@ -325,6 +405,11 @@ export type OrganizationCreateManyInput = {
   metadata?: string | null
   createdAt?: Date | string
   stripeCustomerId?: string | null
+  banned?: boolean
+  banReason?: string | null
+  banObservation?: string | null
+  bannedAt?: Date | string | null
+  bannedById?: string | null
 }
 
 export type OrganizationUpdateManyMutationInput = {
@@ -335,6 +420,11 @@ export type OrganizationUpdateManyMutationInput = {
   metadata?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   stripeCustomerId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  banned?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  banReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  banObservation?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  bannedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  bannedById?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
 }
 
 export type OrganizationUncheckedUpdateManyInput = {
@@ -345,6 +435,11 @@ export type OrganizationUncheckedUpdateManyInput = {
   metadata?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   stripeCustomerId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  banned?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  banReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  banObservation?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  bannedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  bannedById?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
 }
 
 export type OrganizationNullableScalarRelationFilter = {
@@ -360,6 +455,11 @@ export type OrganizationCountOrderByAggregateInput = {
   metadata?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   stripeCustomerId?: Prisma.SortOrder
+  banned?: Prisma.SortOrder
+  banReason?: Prisma.SortOrder
+  banObservation?: Prisma.SortOrder
+  bannedAt?: Prisma.SortOrder
+  bannedById?: Prisma.SortOrder
 }
 
 export type OrganizationMaxOrderByAggregateInput = {
@@ -370,6 +470,11 @@ export type OrganizationMaxOrderByAggregateInput = {
   metadata?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   stripeCustomerId?: Prisma.SortOrder
+  banned?: Prisma.SortOrder
+  banReason?: Prisma.SortOrder
+  banObservation?: Prisma.SortOrder
+  bannedAt?: Prisma.SortOrder
+  bannedById?: Prisma.SortOrder
 }
 
 export type OrganizationMinOrderByAggregateInput = {
@@ -380,6 +485,11 @@ export type OrganizationMinOrderByAggregateInput = {
   metadata?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   stripeCustomerId?: Prisma.SortOrder
+  banned?: Prisma.SortOrder
+  banReason?: Prisma.SortOrder
+  banObservation?: Prisma.SortOrder
+  bannedAt?: Prisma.SortOrder
+  bannedById?: Prisma.SortOrder
 }
 
 export type OrganizationScalarRelationFilter = {
@@ -453,6 +563,11 @@ export type OrganizationCreateWithoutAuditLogsInput = {
   metadata?: string | null
   createdAt?: Date | string
   stripeCustomerId?: string | null
+  banned?: boolean
+  banReason?: string | null
+  banObservation?: string | null
+  bannedAt?: Date | string | null
+  bannedById?: string | null
   members?: Prisma.MemberCreateNestedManyWithoutOrganizationInput
   invitations?: Prisma.InvitationCreateNestedManyWithoutOrganizationInput
   organizationRoles?: Prisma.OrganizationRoleCreateNestedManyWithoutOrganizationInput
@@ -466,6 +581,11 @@ export type OrganizationUncheckedCreateWithoutAuditLogsInput = {
   metadata?: string | null
   createdAt?: Date | string
   stripeCustomerId?: string | null
+  banned?: boolean
+  banReason?: string | null
+  banObservation?: string | null
+  bannedAt?: Date | string | null
+  bannedById?: string | null
   members?: Prisma.MemberUncheckedCreateNestedManyWithoutOrganizationInput
   invitations?: Prisma.InvitationUncheckedCreateNestedManyWithoutOrganizationInput
   organizationRoles?: Prisma.OrganizationRoleUncheckedCreateNestedManyWithoutOrganizationInput
@@ -495,6 +615,11 @@ export type OrganizationUpdateWithoutAuditLogsInput = {
   metadata?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   stripeCustomerId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  banned?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  banReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  banObservation?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  bannedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  bannedById?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   members?: Prisma.MemberUpdateManyWithoutOrganizationNestedInput
   invitations?: Prisma.InvitationUpdateManyWithoutOrganizationNestedInput
   organizationRoles?: Prisma.OrganizationRoleUpdateManyWithoutOrganizationNestedInput
@@ -508,6 +633,11 @@ export type OrganizationUncheckedUpdateWithoutAuditLogsInput = {
   metadata?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   stripeCustomerId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  banned?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  banReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  banObservation?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  bannedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  bannedById?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   members?: Prisma.MemberUncheckedUpdateManyWithoutOrganizationNestedInput
   invitations?: Prisma.InvitationUncheckedUpdateManyWithoutOrganizationNestedInput
   organizationRoles?: Prisma.OrganizationRoleUncheckedUpdateManyWithoutOrganizationNestedInput
@@ -521,6 +651,11 @@ export type OrganizationCreateWithoutMembersInput = {
   metadata?: string | null
   createdAt?: Date | string
   stripeCustomerId?: string | null
+  banned?: boolean
+  banReason?: string | null
+  banObservation?: string | null
+  bannedAt?: Date | string | null
+  bannedById?: string | null
   invitations?: Prisma.InvitationCreateNestedManyWithoutOrganizationInput
   organizationRoles?: Prisma.OrganizationRoleCreateNestedManyWithoutOrganizationInput
   auditLogs?: Prisma.AuditLogCreateNestedManyWithoutOrganizationInput
@@ -534,6 +669,11 @@ export type OrganizationUncheckedCreateWithoutMembersInput = {
   metadata?: string | null
   createdAt?: Date | string
   stripeCustomerId?: string | null
+  banned?: boolean
+  banReason?: string | null
+  banObservation?: string | null
+  bannedAt?: Date | string | null
+  bannedById?: string | null
   invitations?: Prisma.InvitationUncheckedCreateNestedManyWithoutOrganizationInput
   organizationRoles?: Prisma.OrganizationRoleUncheckedCreateNestedManyWithoutOrganizationInput
   auditLogs?: Prisma.AuditLogUncheckedCreateNestedManyWithoutOrganizationInput
@@ -563,6 +703,11 @@ export type OrganizationUpdateWithoutMembersInput = {
   metadata?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   stripeCustomerId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  banned?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  banReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  banObservation?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  bannedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  bannedById?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   invitations?: Prisma.InvitationUpdateManyWithoutOrganizationNestedInput
   organizationRoles?: Prisma.OrganizationRoleUpdateManyWithoutOrganizationNestedInput
   auditLogs?: Prisma.AuditLogUpdateManyWithoutOrganizationNestedInput
@@ -576,6 +721,11 @@ export type OrganizationUncheckedUpdateWithoutMembersInput = {
   metadata?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   stripeCustomerId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  banned?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  banReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  banObservation?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  bannedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  bannedById?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   invitations?: Prisma.InvitationUncheckedUpdateManyWithoutOrganizationNestedInput
   organizationRoles?: Prisma.OrganizationRoleUncheckedUpdateManyWithoutOrganizationNestedInput
   auditLogs?: Prisma.AuditLogUncheckedUpdateManyWithoutOrganizationNestedInput
@@ -589,6 +739,11 @@ export type OrganizationCreateWithoutInvitationsInput = {
   metadata?: string | null
   createdAt?: Date | string
   stripeCustomerId?: string | null
+  banned?: boolean
+  banReason?: string | null
+  banObservation?: string | null
+  bannedAt?: Date | string | null
+  bannedById?: string | null
   members?: Prisma.MemberCreateNestedManyWithoutOrganizationInput
   organizationRoles?: Prisma.OrganizationRoleCreateNestedManyWithoutOrganizationInput
   auditLogs?: Prisma.AuditLogCreateNestedManyWithoutOrganizationInput
@@ -602,6 +757,11 @@ export type OrganizationUncheckedCreateWithoutInvitationsInput = {
   metadata?: string | null
   createdAt?: Date | string
   stripeCustomerId?: string | null
+  banned?: boolean
+  banReason?: string | null
+  banObservation?: string | null
+  bannedAt?: Date | string | null
+  bannedById?: string | null
   members?: Prisma.MemberUncheckedCreateNestedManyWithoutOrganizationInput
   organizationRoles?: Prisma.OrganizationRoleUncheckedCreateNestedManyWithoutOrganizationInput
   auditLogs?: Prisma.AuditLogUncheckedCreateNestedManyWithoutOrganizationInput
@@ -631,6 +791,11 @@ export type OrganizationUpdateWithoutInvitationsInput = {
   metadata?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   stripeCustomerId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  banned?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  banReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  banObservation?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  bannedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  bannedById?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   members?: Prisma.MemberUpdateManyWithoutOrganizationNestedInput
   organizationRoles?: Prisma.OrganizationRoleUpdateManyWithoutOrganizationNestedInput
   auditLogs?: Prisma.AuditLogUpdateManyWithoutOrganizationNestedInput
@@ -644,6 +809,11 @@ export type OrganizationUncheckedUpdateWithoutInvitationsInput = {
   metadata?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   stripeCustomerId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  banned?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  banReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  banObservation?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  bannedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  bannedById?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   members?: Prisma.MemberUncheckedUpdateManyWithoutOrganizationNestedInput
   organizationRoles?: Prisma.OrganizationRoleUncheckedUpdateManyWithoutOrganizationNestedInput
   auditLogs?: Prisma.AuditLogUncheckedUpdateManyWithoutOrganizationNestedInput
@@ -657,6 +827,11 @@ export type OrganizationCreateWithoutOrganizationRolesInput = {
   metadata?: string | null
   createdAt?: Date | string
   stripeCustomerId?: string | null
+  banned?: boolean
+  banReason?: string | null
+  banObservation?: string | null
+  bannedAt?: Date | string | null
+  bannedById?: string | null
   members?: Prisma.MemberCreateNestedManyWithoutOrganizationInput
   invitations?: Prisma.InvitationCreateNestedManyWithoutOrganizationInput
   auditLogs?: Prisma.AuditLogCreateNestedManyWithoutOrganizationInput
@@ -670,6 +845,11 @@ export type OrganizationUncheckedCreateWithoutOrganizationRolesInput = {
   metadata?: string | null
   createdAt?: Date | string
   stripeCustomerId?: string | null
+  banned?: boolean
+  banReason?: string | null
+  banObservation?: string | null
+  bannedAt?: Date | string | null
+  bannedById?: string | null
   members?: Prisma.MemberUncheckedCreateNestedManyWithoutOrganizationInput
   invitations?: Prisma.InvitationUncheckedCreateNestedManyWithoutOrganizationInput
   auditLogs?: Prisma.AuditLogUncheckedCreateNestedManyWithoutOrganizationInput
@@ -699,6 +879,11 @@ export type OrganizationUpdateWithoutOrganizationRolesInput = {
   metadata?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   stripeCustomerId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  banned?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  banReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  banObservation?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  bannedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  bannedById?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   members?: Prisma.MemberUpdateManyWithoutOrganizationNestedInput
   invitations?: Prisma.InvitationUpdateManyWithoutOrganizationNestedInput
   auditLogs?: Prisma.AuditLogUpdateManyWithoutOrganizationNestedInput
@@ -712,6 +897,11 @@ export type OrganizationUncheckedUpdateWithoutOrganizationRolesInput = {
   metadata?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   stripeCustomerId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  banned?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  banReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  banObservation?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  bannedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  bannedById?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   members?: Prisma.MemberUncheckedUpdateManyWithoutOrganizationNestedInput
   invitations?: Prisma.InvitationUncheckedUpdateManyWithoutOrganizationNestedInput
   auditLogs?: Prisma.AuditLogUncheckedUpdateManyWithoutOrganizationNestedInput
@@ -783,6 +973,11 @@ export type OrganizationSelect<ExtArgs extends runtime.Types.Extensions.Internal
   metadata?: boolean
   createdAt?: boolean
   stripeCustomerId?: boolean
+  banned?: boolean
+  banReason?: boolean
+  banObservation?: boolean
+  bannedAt?: boolean
+  bannedById?: boolean
   members?: boolean | Prisma.Organization$membersArgs<ExtArgs>
   invitations?: boolean | Prisma.Organization$invitationsArgs<ExtArgs>
   organizationRoles?: boolean | Prisma.Organization$organizationRolesArgs<ExtArgs>
@@ -798,6 +993,11 @@ export type OrganizationSelectCreateManyAndReturn<ExtArgs extends runtime.Types.
   metadata?: boolean
   createdAt?: boolean
   stripeCustomerId?: boolean
+  banned?: boolean
+  banReason?: boolean
+  banObservation?: boolean
+  bannedAt?: boolean
+  bannedById?: boolean
 }, ExtArgs["result"]["organization"]>
 
 export type OrganizationSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
@@ -808,6 +1008,11 @@ export type OrganizationSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.
   metadata?: boolean
   createdAt?: boolean
   stripeCustomerId?: boolean
+  banned?: boolean
+  banReason?: boolean
+  banObservation?: boolean
+  bannedAt?: boolean
+  bannedById?: boolean
 }, ExtArgs["result"]["organization"]>
 
 export type OrganizationSelectScalar = {
@@ -818,9 +1023,14 @@ export type OrganizationSelectScalar = {
   metadata?: boolean
   createdAt?: boolean
   stripeCustomerId?: boolean
+  banned?: boolean
+  banReason?: boolean
+  banObservation?: boolean
+  bannedAt?: boolean
+  bannedById?: boolean
 }
 
-export type OrganizationOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "name" | "slug" | "logo" | "metadata" | "createdAt" | "stripeCustomerId", ExtArgs["result"]["organization"]>
+export type OrganizationOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "name" | "slug" | "logo" | "metadata" | "createdAt" | "stripeCustomerId" | "banned" | "banReason" | "banObservation" | "bannedAt" | "bannedById", ExtArgs["result"]["organization"]>
 export type OrganizationInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   members?: boolean | Prisma.Organization$membersArgs<ExtArgs>
   invitations?: boolean | Prisma.Organization$invitationsArgs<ExtArgs>
@@ -847,6 +1057,11 @@ export type $OrganizationPayload<ExtArgs extends runtime.Types.Extensions.Intern
     metadata: string | null
     createdAt: Date
     stripeCustomerId: string | null
+    banned: boolean
+    banReason: string | null
+    banObservation: string | null
+    bannedAt: Date | null
+    bannedById: string | null
   }, ExtArgs["result"]["organization"]>
   composites: {}
 }
@@ -1281,6 +1496,11 @@ export interface OrganizationFieldRefs {
   readonly metadata: Prisma.FieldRef<"Organization", 'String'>
   readonly createdAt: Prisma.FieldRef<"Organization", 'DateTime'>
   readonly stripeCustomerId: Prisma.FieldRef<"Organization", 'String'>
+  readonly banned: Prisma.FieldRef<"Organization", 'Boolean'>
+  readonly banReason: Prisma.FieldRef<"Organization", 'String'>
+  readonly banObservation: Prisma.FieldRef<"Organization", 'String'>
+  readonly bannedAt: Prisma.FieldRef<"Organization", 'DateTime'>
+  readonly bannedById: Prisma.FieldRef<"Organization", 'String'>
 }
     
 

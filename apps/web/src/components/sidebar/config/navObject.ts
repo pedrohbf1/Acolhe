@@ -1,6 +1,8 @@
 import {
   CreditCard,
   LayoutDashboard,
+  LifeBuoy,
+  MessageSquare,
   Settings,
   Sparkles,
 } from "lucide-react";
@@ -31,7 +33,8 @@ export const sidebarNav = [
           { title: "Perfil", url: "/configuracoes/perfil" },
           { title: "Organização", url: "/configuracoes/organizacao" },
           { title: "Membros", url: "/configuracoes/membros" },
-          { title: "Assinatura", url: "/configuracoes/billing" },
+          { title: "Cargos", url: "/configuracoes/cargos" },
+          { title: "Logs", url: "/configuracoes/logs" },
         ],
       },
       {
@@ -39,6 +42,13 @@ export const sidebarNav = [
         icon: CreditCard,
         url: "/configuracoes/billing",
       },
+    ],
+  },
+  {
+    title: "Suporte",
+    items: [
+      { title: "Ajuda", url: "/ajuda", icon: LifeBuoy },
+      { title: "Feedback", url: "/feedback", icon: MessageSquare },
     ],
   },
 ];

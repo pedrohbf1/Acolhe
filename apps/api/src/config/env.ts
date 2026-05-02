@@ -28,7 +28,7 @@ export const env = {
   NODE_ENV: getEnv("NODE_ENV").default("development"),
 
   // URLs
-  SITE_URL: getEnv("SITE_URL").default("http://localhost:5173"),
+  SITE_URL: getEnv("SITE_URL").default("http://localhost:5173") as string,
   ALLOWED_ORIGINS: (
     getEnv("ALLOWED_ORIGINS").value ?? "http://localhost:5173"
   )
@@ -57,4 +57,21 @@ export const env = {
   RESEND_FROM_EMAIL: getEnv("RESEND_FROM_EMAIL").default(
     "useAcolhe <onboarding@resend.dev>",
   ) as string,
+
+  // Suporte / feedback
+  /** Inbox que recebe os feedbacks enviados pela /feedback. */
+  FEEDBACK_TO_EMAIL: getEnv("FEEDBACK_TO_EMAIL").default(
+    "pedrohbf12332@gmail.com",
+  ) as string,
+
+  // ─── Admin / super-admin (acesso ao painel oculto) ──────────────────────────
+  // Setup:
+  // 1. Gere o hash da passphrase com `bun run scripts/hash-admin-passphrase.ts <pass>`
+  // 2. Cole no `.env` como ADMIN_PASSPHRASE_HASH
+  // 3. Gere um segredo aleatório (`openssl rand -hex 32`) em ADMIN_SESSION_SECRET
+  // 4. Promova um usuário a `super_admin` no banco (UPDATE user SET role='super_admin'...)
+  /** Hash bcrypt-like (Bun.password) da passphrase mestre. */
+  ADMIN_PASSPHRASE_HASH: getEnv("ADMIN_PASSPHRASE_HASH").value,
+  /** Segredo HMAC para assinar o cookie de unlock do painel admin. */
+  ADMIN_SESSION_SECRET: getEnv("ADMIN_SESSION_SECRET").value,
 };

@@ -19,12 +19,21 @@ model User {
   accounts      Account[]
 
   twoFactorEnabled Boolean?     @default(false)
+  /// "user" | "admin" | "super_admin". super_admin é o dono do produto.
+  /// Nunca atribuir via UI — só direto no banco ou em script protegido.
   role             String?      @default("user")
   banned           Boolean?     @default(false)
   banReason        String?
   banExpires       DateTime?
+  /// Observação detalhada do banimento (mostrada ao usuário).
+  banObservation   String?
+  /// Quem (super_admin) banou.
+  bannedById       String?
+  /// Quando banido.
+  bannedAt         DateTime?
   auditLogs        AuditLog[]
   appSettings      AppSetting[]
+  feedbacks        Feedback[]
 
   // Stripe
   stripeCustomerId String? @unique
@@ -32,6 +41,10 @@ model User {
   // Organization
   members          Member[]
   invitations      Invitation[]
+
+  // Plano customizado 1:1 (relação inversa via CustomPlan.userId).
+  // Se preenchido, o resolver de plano usa este em vez da subscription Stripe.
+  customPlan CustomPlan?
 
   @@unique([email])
   @@map("user")
@@ -136,6 +149,16 @@ model Organization {
   // Stripe
   stripeCustomerId String? @unique
 
+  // Ban (somente super_admin pode setar)
+  banned         Boolean   @default(false)
+  banReason      String?
+  banObservation String?
+  bannedAt       DateTime?
+  bannedById     String?
+
+  // Plano customizado é por USUÁRIO (1:1), não por organização.
+  // Os limites do owner se aplicam às orgs que ele cria.
+
   members           Member[]
   invitations       Invitation[]
   organizationRoles OrganizationRole[]
@@ -219,4 +242,77 @@ model Subscription {
   @@index([stripeCustomerId])
   @@index([stripeSubscriptionId])
   @@map("subscription")
+}
+
+// ─── Feedback (de usuários para os donos) ────────────────────────────────────
+
+model Feedback {
+  id        String   @id @default(cuid())
+  userId    String
+  /// "bug" | "suggestion" | "praise" | "question"
+  type      String
+  subject   String
+  message   String
+  /// "new" | "read" | "replied" | "archived"
+  status    String   @default("new")
+  /// Notas internas do super_admin (não visíveis pro usuário).
+  adminNote String?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@index([status])
+  @@index([createdAt])
+  @@map("feedback")
+}
+
+// ─── Custom Plans (criados pelo super_admin, 1:1 com User, cobrado via Stripe) ─
+
+model CustomPlan {
+  id String @id @default(cuid())
+
+  /// Usuário ÚNICO atribuído a este plano. Relação 1:1: cada plano custom
+  /// pertence a exatamente um cliente. Se quer dar pra outro, cria outro plano.
+  userId String @unique
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  name  String
+  notes String?
+
+  // ─── Stripe (cobrança automática) ─────────────────────────────────────────
+  /// Stripe Product ID criado para este plano.
+  stripeProductId String
+  /// Stripe Price ID (mensal) criado para este plano.
+  stripePriceMonthly String
+  /// Stripe Price ID (anual), opcional.
+  stripePriceYearly String?
+  /// Stripe Subscription ID que está cobrando este plano.
+  stripeSubscriptionId String?
+  /// Status da subscription Stripe (active, incomplete, past_due, canceled, ...).
+  stripeStatus String?
+
+  /// Preço mensal em BRL (referência — fonte de verdade é o Stripe Price).
+  monthlyPriceBRL Float
+  /// Preço anual em BRL, opcional.
+  yearlyPriceBRL  Float?
+
+  // Limites do plano
+  maxOrganizations Int
+  maxPatients      Int
+  maxMembers       Int
+
+  // Capabilities
+  auditLog    Boolean @default(true)
+  customRoles Boolean @default(true)
+
+  /// userId do super_admin que criou.
+  createdById String
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@index([createdById])
+  @@index([stripeSubscriptionId])
+  @@map("custom_plan")
 }

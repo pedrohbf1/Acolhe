@@ -1,4 +1,4 @@
-import type { ReactNode } from "react";
+import type { ReactNode } from 'react';
 import {
   Dialog,
   DialogBody,
@@ -7,7 +7,7 @@ import {
   DialogFooter,
   DialogHeader,
   DialogTitle,
-} from "@/components/ui/dialog";
+} from '@/components/ui/dialog';
 
 interface ModalProps {
   open: boolean;
@@ -17,14 +17,14 @@ interface ModalProps {
   children: ReactNode;
   footer?: ReactNode;
   showCloseButton?: boolean;
-  size?: "sm" | "md" | "lg" | "xl";
+  size?: 'sm' | 'md' | 'lg' | 'xl';
 }
 
 const sizeClass = {
-  sm: "sm:max-w-sm",
-  md: "sm:max-w-md",
-  lg: "sm:max-w-lg",
-  xl: "sm:max-w-xl",
+  sm: 'sm:max-w-sm',
+  md: 'sm:max-w-md',
+  lg: 'sm:max-w-lg',
+  xl: 'sm:max-w-xl',
 };
 
 export default function Modal({
@@ -35,14 +35,11 @@ export default function Modal({
   children,
   footer,
   showCloseButton = true,
-  size = "md",
+  size = 'md',
 }: ModalProps) {
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent
-        showCloseButton={showCloseButton}
-        className={sizeClass[size]}
-      >
+      <DialogContent showCloseButton={showCloseButton} className={sizeClass[size]}>
         <DialogHeader>
           <DialogTitle>{title}</DialogTitle>
           {description && <DialogDescription>{description}</DialogDescription>}

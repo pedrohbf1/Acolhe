@@ -8,8 +8,10 @@ import { betterAuthPlugin, OpenAPI } from "@/plugins/better-openApi";
 import { auditPlugin } from "@/plugins/auditPlugin";
 
 // ─── Módulos ──────────────────────────────────────────────────────────────────
+import { adminController, adminUnlockController } from "@/modules/admin/admin.controller";
 import { auditLogController } from "@/modules/audit-log/audit-log.controller";
 import { billingController } from "@/modules/billing/billing.controller";
+import { feedbackController } from "@/modules/feedback/feedback.controller";
 
 // ─── Rotas privadas (exigem autenticação) ─────────────────────────────────────
 const privateRoutes = new Elysia()
@@ -17,7 +19,13 @@ const privateRoutes = new Elysia()
   .use(auditPlugin)
   .guard({ auth: true })
   .use(auditLogController)
-  .use(billingController);
+  .use(billingController)
+  .use(feedbackController)
+  // ─── Admin ────────────────────────────────────────────────────────────────
+  // unlock/lock/status são montados sem o guard `superAdmin` (precisa funcionar
+  // antes do unlock). O resto do admin tá em adminController com superAdmin guard.
+  .use(adminUnlockController)
+  .use(adminController);
 
 // ─── App ──────────────────────────────────────────────────────────────────────
 const app = new Elysia()

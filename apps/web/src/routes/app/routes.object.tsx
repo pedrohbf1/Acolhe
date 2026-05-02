@@ -1,10 +1,13 @@
 import type { Routes } from "../type";
 import DashboardPage from "@/pages/app/dashboard";
+import FeedbackPage from "@/pages/app/feedback";
+import HelpPage from "@/pages/app/help";
 import OnboardingPage from "@/pages/app/onboarding";
 import PricingPage from "@/pages/app/pricing";
 import SettingsLayout from "@/pages/app/settings/layout";
 import ProfileSettingsPage from "@/pages/app/settings/profile";
 import OrganizationSettingsPage from "@/pages/app/settings/organization";
+import OrganizationDetailPage from "@/pages/app/settings/organization/detail";
 import MembersSettingsPage from "@/pages/app/settings/members";
 import RolesSettingsPage from "@/pages/app/settings/roles";
 import AuditLogSettingsPage from "@/pages/app/settings/audit-log";
@@ -15,6 +18,8 @@ export const routesApp: Routes[] = [
   { path: "/", element: <DashboardPage /> },
   { path: "/onboarding", element: <OnboardingPage /> },
   { path: "/pricing", element: <PricingPage /> },
+  { path: "/ajuda", element: <HelpPage /> },
+  { path: "/feedback", element: <FeedbackPage /> },
   { path: "/accept-invitation/:id", element: <AcceptInvitationPage /> },
   {
     path: "/configuracoes",
@@ -22,6 +27,7 @@ export const routesApp: Routes[] = [
     children: [
       { path: "perfil", element: <ProfileSettingsPage /> },
       { path: "organizacao", element: <OrganizationSettingsPage /> },
+      { path: "organizacao/:orgId", element: <OrganizationDetailPage /> },
       { path: "membros", element: <MembersSettingsPage /> },
       { path: "cargos", element: <RolesSettingsPage /> },
       { path: "logs", element: <AuditLogSettingsPage /> },

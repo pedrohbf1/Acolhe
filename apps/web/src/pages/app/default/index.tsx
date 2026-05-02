@@ -1,3 +1,4 @@
+import { OrgSwitchOverlay } from "@/components/org-switch-overlay";
 import { AppSidebar } from "@/components/sidebar/app-sidebar";
 import { findNavTrailByPathname } from "@/components/sidebar/config/nav-helpers";
 import { sidebarNav } from "@/components/sidebar/config/navObject";
@@ -20,6 +21,7 @@ export default function DefaultAppPage() {
 
   return (
     <>
+      <OrgSwitchOverlay />
       <AppSidebar />
       <SidebarInset>
         <header className="flex h-12 shrink-0 bg-sidebar border-b border-sidebar-border items-center gap-2 transition-[width,height] ease-linear group-has-data-[collapsible=icon]/sidebar-wrapper:h-12">

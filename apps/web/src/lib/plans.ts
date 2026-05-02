@@ -6,6 +6,17 @@ import { Sparkles, Rocket, Crown, type LucideIcon } from "lucide-react";
 
 export type PlanName = "free" | "pro" | "team";
 
+export type PlanLimits = {
+  maxOrganizations: number;
+  maxPatients: number;
+  maxMembers: number;
+};
+
+export type PlanFeatures = {
+  auditLog: boolean;
+  customRoles: boolean;
+};
+
 export type PlanDisplay = {
   name: PlanName;
   label: string;
@@ -15,10 +26,9 @@ export type PlanDisplay = {
   icon: LucideIcon;
   highlight?: boolean;
   features: string[];
-  limits: {
-    maxOrganizations: number;
-    maxPatients: number;
-  };
+  limits: PlanLimits;
+  /** Features comportamentais — usado pelo usePlanFeatures pra gate. */
+  capabilities: PlanFeatures;
 };
 
 export const PLANS_DISPLAY: PlanDisplay[] = [
@@ -31,10 +41,12 @@ export const PLANS_DISPLAY: PlanDisplay[] = [
     icon: Sparkles,
     features: [
       "1 organização",
-      "Até 20 pacientes",
+      "Apenas você (sem convites)",
+      "Até 10 pacientes",
       "Suporte por e-mail",
     ],
-    limits: { maxOrganizations: 1, maxPatients: 20 },
+    limits: { maxOrganizations: 1, maxPatients: 10, maxMembers: 1 },
+    capabilities: { auditLog: false, customRoles: false },
   },
   {
     name: "pro",
@@ -46,11 +58,14 @@ export const PLANS_DISPLAY: PlanDisplay[] = [
     highlight: true,
     features: [
       "Até 3 organizações",
-      "Até 150 pacientes",
+      "Você + 1 convidado (ex: secretária)",
+      "Até 200 pacientes",
+      "Logs de auditoria (LGPD)",
       "7 dias grátis",
       "Suporte prioritário",
     ],
-    limits: { maxOrganizations: 3, maxPatients: 150 },
+    limits: { maxOrganizations: 3, maxPatients: 200, maxMembers: 2 },
+    capabilities: { auditLog: true, customRoles: false },
   },
   {
     name: "team",
@@ -61,13 +76,15 @@ export const PLANS_DISPLAY: PlanDisplay[] = [
     icon: Crown,
     features: [
       "Até 5 organizações",
-      "Até 500 pacientes",
+      "Até 5 membros por org",
+      "Até 1.000 pacientes",
       "Cargos personalizados",
-      "Logs de auditoria",
+      "Logs de auditoria (LGPD)",
       "7 dias grátis",
       "Suporte prioritário",
     ],
-    limits: { maxOrganizations: 5, maxPatients: 500 },
+    limits: { maxOrganizations: 5, maxPatients: 1000, maxMembers: 5 },
+    capabilities: { auditLog: true, customRoles: true },
   },
 ];
 
