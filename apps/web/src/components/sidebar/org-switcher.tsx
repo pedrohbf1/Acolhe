@@ -15,12 +15,10 @@ import {
 } from "@/components/ui/sidebar";
 import {
   useActiveOrganization,
-  useActivePlan,
   useOrganizations,
 } from "@/hooks/useOrganizations";
 import { usePlanFeatures } from "@/hooks/usePlanFeatures";
 import { useSwitchOrganization } from "@/hooks/useSwitchOrganization";
-import { getPlanDisplay } from "@/lib/plans";
 import {
   Building2,
   Check,
@@ -35,9 +33,10 @@ export function OrgSwitcher() {
   const { state, isMobile } = useSidebar();
   const { data: orgs = [] } = useOrganizations();
   const { data: active } = useActiveOrganization();
-  const planName = useActivePlan();
-  const plan = getPlanDisplay(planName);
+  // O `planDisplay` exposto pelo hook já considera o custom plan pago, então
+  // o badge mostra "Plano <custom-name>" assim que o pagamento é confirmado.
   const features = usePlanFeatures();
+  const plan = features.planDisplay;
   const navigate = useNavigate();
   const switchOrg = useSwitchOrganization();
 

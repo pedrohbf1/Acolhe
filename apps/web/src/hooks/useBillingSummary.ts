@@ -32,8 +32,25 @@ export interface SubscriptionRecord {
   stripeSubscriptionId: string | null;
 }
 
+export interface CustomPlanSummary {
+  id: string;
+  name: string;
+  notes: string | null;
+  monthlyPriceBRL: number;
+  yearlyPriceBRL: number | null;
+  maxOrganizations: number;
+  maxPatients: number;
+  maxMembers: number;
+  auditLog: boolean;
+  customRoles: boolean;
+  stripeStatus: string | null;
+  stripeSubscriptionId: string | null;
+  createdAt: string;
+}
+
 export interface BillingSummary {
   subscription: SubscriptionRecord | null;
+  customPlan: CustomPlanSummary | null;
   customerId: string | null;
   invoices: InvoiceSummary[];
   paymentMethod: PaymentMethodSummary | null;

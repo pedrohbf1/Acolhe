@@ -3,6 +3,7 @@ import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Button } from '@/components/ui/button';
 import {
   Dialog,
+  DialogBody,
   DialogContent,
   DialogDescription,
   DialogFooter,
@@ -412,33 +413,35 @@ export default function MembersSettingsPage() {
               Enviaremos um e-mail com o link de convite. Expira em 48 horas.
             </DialogDescription>
           </DialogHeader>
-          <form {...formProps((d) => invite.mutate(d))} className="flex flex-col gap-4">
-            <Input
-              title="E-mail"
-              register={register('email')}
-              error={errors.email?.message}
-              inputConfig={{ placeholder: 'pessoa@exemplo.com' }}
-            />
-            <Controller
-              control={control}
-              name="role"
-              render={({ field }) => (
-                <Input
-                  title="Cargo inicial"
-                  register={{
-                    name: 'role',
-                    onChange: async () => {},
-                    onBlur: async () => {},
-                    ref: () => {},
-                  }}
-                  select={{
-                    options: roleOptions,
-                    value: field.value,
-                    onChange: field.onChange,
-                  }}
-                />
-              )}
-            />
+          <form {...formProps((d) => invite.mutate(d))}>
+            <DialogBody>
+              <Input
+                title="E-mail"
+                register={register('email')}
+                error={errors.email?.message}
+                inputConfig={{ placeholder: 'pessoa@exemplo.com' }}
+              />
+              <Controller
+                control={control}
+                name="role"
+                render={({ field }) => (
+                  <Input
+                    title="Cargo inicial"
+                    register={{
+                      name: 'role',
+                      onChange: async () => {},
+                      onBlur: async () => {},
+                      ref: () => {},
+                    }}
+                    select={{
+                      options: roleOptions,
+                      value: field.value,
+                      onChange: field.onChange,
+                    }}
+                  />
+                )}
+              />
+            </DialogBody>
             <DialogFooter>
               <Button type="button" variant="outline" onClick={() => setInviteOpen(false)}>
                 Cancelar

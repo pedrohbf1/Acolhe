@@ -1,11 +1,7 @@
 import { Button } from "@/components/ui/button";
 import { useAuth } from "@/hooks/useAuth";
-import {
-  useActiveOrganization,
-  useActivePlan,
-} from "@/hooks/useOrganizations";
+import { useActiveOrganization } from "@/hooks/useOrganizations";
 import { usePlanFeatures } from "@/hooks/usePlanFeatures";
-import { getPlanDisplay } from "@/lib/plans";
 import {
   ArrowRight,
   Building2,
@@ -18,9 +14,9 @@ import { Link } from "react-router-dom";
 export default function DashboardPage() {
   const { user } = useAuth();
   const { data: activeOrg } = useActiveOrganization();
-  const planName = useActivePlan();
-  const plan = getPlanDisplay(planName);
   const features = usePlanFeatures();
+  // planDisplay já leva o custom plan pago em conta.
+  const plan = features.planDisplay;
 
   const memberCount = activeOrg?.members?.length ?? 1;
   const PlanIcon = plan.icon;

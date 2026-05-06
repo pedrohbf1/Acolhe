@@ -43,6 +43,10 @@ export default class BillingRepository {
     return user?.stripeCustomerId ?? null;
   }
 
+  async findUserCustomPlan(userId: string) {
+    return prisma.customPlan.findUnique({ where: { userId } });
+  }
+
   async listInvoices(customerId: string, limit = 12): Promise<InvoiceSummary[]> {
     const invoices = await stripeClient.invoices.list({
       customer: customerId,

@@ -127,6 +127,26 @@ export interface AdminFeedback {
   user: { id: string; name: string; email: string; image: string | null };
 }
 
+export interface AdminAuditLog {
+  id: string;
+  userId: string;
+  organizationId: string | null;
+  action: string;
+  resource: string;
+  resourceId: string;
+  metadata: unknown;
+  ip: string | null;
+  userAgent: string | null;
+  createdAt: string;
+  user: { id: string; name: string; email: string; image: string | null };
+  organization: { id: string; name: string; slug: string } | null;
+}
+
+export interface AdminAuditFilterOptions {
+  actions: Array<{ value: string; count: number }>;
+  resources: Array<{ value: string; count: number }>;
+}
+
 export interface Paginated<T> {
   data: T[];
   total: number;
@@ -137,6 +157,157 @@ export interface Paginated<T> {
 
 // ─── Endpoints ──────────────────────────────────────────────────────────────
 
+// ─── Detail types (drawer no painel) ────────────────────────────────────────
+
+export interface AdminOrgRef {
+  id: string;
+  name: string;
+  slug: string;
+  logo: string | null;
+  banned: boolean;
+  createdAt: string;
+  _count: { members: number; invitations: number };
+}
+
+export interface AdminMemberRow {
+  id: string;
+  role: string;
+  createdAt: string;
+  user: {
+    id: string;
+    name: string;
+    email: string;
+    image: string | null;
+    banned?: boolean | null;
+    customPlan?: {
+      id: string;
+      name: string;
+      monthlyPriceBRL: number;
+      stripeStatus: string | null;
+    } | null;
+  };
+}
+
+export interface AdminUserDetails {
+  id: string;
+  name: string;
+  email: string;
+  emailVerified: boolean;
+  image: string | null;
+  role: string | null;
+  banned: boolean | null;
+  banReason: string | null;
+  banObservation: string | null;
+  banExpires: string | null;
+  bannedAt: string | null;
+  bannedById: string | null;
+  createdAt: string;
+  stripeCustomerId: string | null;
+  twoFactorEnabled: boolean | null;
+  customPlan: AdminCustomPlan | null;
+  members: Array<{
+    id: string;
+    role: string;
+    createdAt: string;
+    organization: AdminOrgRef & { members: AdminMemberRow[] };
+  }>;
+  subscriptions: Array<{
+    id: string;
+    plan: string;
+    status: string;
+    periodStart: string | null;
+    periodEnd: string | null;
+    cancelAtPeriodEnd: boolean | null;
+    trialStart: string | null;
+    trialEnd: string | null;
+    stripeSubscriptionId: string | null;
+  }>;
+  recentAuditLogs: Array<{
+    id: string;
+    action: string;
+    resource: string;
+    resourceId: string;
+    organizationId: string | null;
+    createdAt: string;
+    metadata: unknown;
+  }>;
+  recentFeedbacks: Array<{
+    id: string;
+    type: string;
+    subject: string;
+    message: string;
+    status: string;
+    createdAt: string;
+  }>;
+  activeSessions: number;
+  lastSession: {
+    createdAt: string;
+    ipAddress: string | null;
+    userAgent: string | null;
+  } | null;
+  _count: { feedbacks: number; auditLogs: number; invitations: number };
+}
+
+export interface AdminOrgDetails extends AdminOrg {
+  members: AdminMemberRow[];
+  invitations: Array<{
+    id: string;
+    email: string;
+    role: string | null;
+    status: string;
+    createdAt: string;
+    expiresAt: string;
+    inviter: { id: string; name: string; email: string; image: string | null };
+  }>;
+  organizationRoles: Array<{
+    id: string;
+    role: string;
+    permission: string;
+    createdAt: string;
+  }>;
+  ownerSubscriptions: Array<{
+    id: string;
+    plan: string;
+    status: string;
+    periodStart: string | null;
+    periodEnd: string | null;
+    cancelAtPeriodEnd: boolean | null;
+    stripeSubscriptionId: string | null;
+  }>;
+  recentAuditLogs: Array<{
+    id: string;
+    action: string;
+    resource: string;
+    resourceId: string;
+    createdAt: string;
+    user: { id: string; name: string; email: string; image: string | null };
+  }>;
+}
+
+export interface AdminRichStats {
+  users: number;
+  verifiedUsers: number;
+  orgs: number;
+  bannedUsers: number;
+  bannedOrgs: number;
+  feedbacks: number;
+  newFeedbacks: number;
+  activeSubs: number;
+  trialingSubs: number;
+  pastDueSubs: number;
+  customPlans: number;
+  newUsers7d: number;
+  newUsers30d: number;
+  newOrgs7d: number;
+  newOrgs30d: number;
+  mrrCustomPlansBRL: number;
+  planBreakdown: Array<{
+    plan: string;
+    status: string;
+    _count: { _all: number };
+  }>;
+}
+
 export const adminApi = {
   status: () => request<AdminStatus>('GET', '/admin/status'),
   unlock: (passphrase: string) =>
@@ -145,6 +316,7 @@ export const adminApi = {
     }),
   lock: () => request<{ ok: true }>('POST', '/admin/lock'),
   stats: () => request<AdminStats>('GET', '/admin/stats'),
+  richStats: () => request<AdminRichStats>('GET', '/admin/stats/rich'),
 
   // Users
   listUsers: (params: { page: number; limit: number; search?: string }) => {
@@ -155,6 +327,8 @@ export const adminApi = {
     });
     return request<Paginated<AdminUser>>('GET', `/admin/users?${qs}`);
   },
+  getUserDetails: (id: string) =>
+    request<AdminUserDetails>('GET', `/admin/users/${id}`),
   banUser: (
     userId: string,
     body: { reason: string; observation?: string; expiresAt?: string },
@@ -170,6 +344,43 @@ export const adminApi = {
       ...(params.search ? { search: params.search } : {}),
     });
     return request<Paginated<AdminOrg>>('GET', `/admin/organizations?${qs}`);
+  },
+  getOrgDetails: (id: string) =>
+    request<AdminOrgDetails>('GET', `/admin/organizations/${id}`),
+
+  // Audit logs
+  listAuditLogs: (params: {
+    page: number;
+    limit: number;
+    userId?: string;
+    organizationId?: string;
+    resource?: string;
+    action?: string;
+    dateFrom?: string;
+    dateTo?: string;
+  }) => {
+    const qs = new URLSearchParams();
+    qs.set('page', String(params.page));
+    qs.set('limit', String(params.limit));
+    if (params.userId) qs.set('userId', params.userId);
+    if (params.organizationId) qs.set('organizationId', params.organizationId);
+    if (params.resource) qs.set('resource', params.resource);
+    if (params.action) qs.set('action', params.action);
+    if (params.dateFrom) qs.set('dateFrom', params.dateFrom);
+    if (params.dateTo) qs.set('dateTo', params.dateTo);
+    return request<Paginated<AdminAuditLog>>(
+      'GET',
+      `/admin/audit-logs?${qs}`,
+    );
+  },
+  getAuditFilterOptions: (scope: { userId?: string; organizationId?: string }) => {
+    const qs = new URLSearchParams();
+    if (scope.userId) qs.set('userId', scope.userId);
+    if (scope.organizationId) qs.set('organizationId', scope.organizationId);
+    return request<AdminAuditFilterOptions>(
+      'GET',
+      `/admin/audit-logs/filter-options?${qs}`,
+    );
   },
   banOrg: (
     orgId: string,

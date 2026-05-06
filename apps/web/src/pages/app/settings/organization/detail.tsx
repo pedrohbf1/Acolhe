@@ -3,6 +3,7 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import {
   Dialog,
+  DialogBody,
   DialogContent,
   DialogDescription,
   DialogFooter,
@@ -18,7 +19,6 @@ import {
 import { useAuth } from "@/hooks/useAuth";
 import {
   useActiveOrganization,
-  useActivePlan,
   useOrganization,
   useOrganizations,
 } from "@/hooks/useOrganizations";
@@ -26,7 +26,6 @@ import { usePlanFeatures } from "@/hooks/usePlanFeatures";
 import { useSwitchOrganization } from "@/hooks/useSwitchOrganization";
 import { useZodForm } from "@/hooks/useZodForm";
 import { authClient } from "@/lib/auth-client";
-import { getPlanDisplay } from "@/lib/plans";
 import {
   schemaCreateOrganization,
   type SchemaCreateOrganization,
@@ -86,8 +85,9 @@ export default function OrganizationDetailPage() {
   const { data: active } = useActiveOrganization();
   const { data: orgs = [], isLoading: loadingList } = useOrganizations();
   const features = usePlanFeatures();
-  const planName = useActivePlan();
-  const planDisplay = getPlanDisplay(planName);
+  // planDisplay já considera custom plan pago — usar `useActivePlan` direto
+  // ignoraria o custom plan e mostraria "free" mesmo após pagamento.
+  const planDisplay = features.planDisplay;
   const qc = useQueryClient();
   const switchOrg = useSwitchOrganization();
 
@@ -510,21 +510,20 @@ export default function OrganizationDetailPage() {
               Atualize o nome e o identificador desta organização.
             </DialogDescription>
           </DialogHeader>
-          <form
-            {...formPropsEdit((d) => update.mutate(d))}
-            className="flex flex-col gap-4"
-          >
-            <Input
-              title="Nome"
-              register={registerEdit("name")}
-              error={errorsEdit.name?.message}
-            />
-            <Input
-              title="Identificador (URL)"
-              register={registerEdit("slug")}
-              error={errorsEdit.slug?.message}
-              inputSubmit
-            />
+          <form {...formPropsEdit((d) => update.mutate(d))}>
+            <DialogBody>
+              <Input
+                title="Nome"
+                register={registerEdit("name")}
+                error={errorsEdit.name?.message}
+              />
+              <Input
+                title="Identificador (URL)"
+                register={registerEdit("slug")}
+                error={errorsEdit.slug?.message}
+                inputSubmit
+              />
+            </DialogBody>
             <DialogFooter>
               <Button
                 type="button"
@@ -551,38 +550,37 @@ export default function OrganizationDetailPage() {
               Enviaremos um e-mail com o link de convite.
             </DialogDescription>
           </DialogHeader>
-          <form
-            {...formPropsInvite((d) => invite.mutate(d))}
-            className="flex flex-col gap-4"
-          >
-            <Input
-              title="E-mail"
-              register={registerInvite("email")}
-              error={errorsInvite.email?.message}
-            />
-            <Controller
-              control={controlInvite}
-              name="role"
-              render={({ field }) => (
-                <Input
-                  title="Cargo"
-                  register={{
-                    name: "role",
-                    onChange: async () => {},
-                    onBlur: async () => {},
-                    ref: () => {},
-                  }}
-                  select={{
-                    options: [
-                      { value: "user", label: "Membro" },
-                      { value: "owner", label: "Owner" },
-                    ],
-                    value: field.value,
-                    onChange: field.onChange,
-                  }}
-                />
-              )}
-            />
+          <form {...formPropsInvite((d) => invite.mutate(d))}>
+            <DialogBody>
+              <Input
+                title="E-mail"
+                register={registerInvite("email")}
+                error={errorsInvite.email?.message}
+              />
+              <Controller
+                control={controlInvite}
+                name="role"
+                render={({ field }) => (
+                  <Input
+                    title="Cargo"
+                    register={{
+                      name: "role",
+                      onChange: async () => {},
+                      onBlur: async () => {},
+                      ref: () => {},
+                    }}
+                    select={{
+                      options: [
+                        { value: "user", label: "Membro" },
+                        { value: "owner", label: "Owner" },
+                      ],
+                      value: field.value,
+                      onChange: field.onChange,
+                    }}
+                  />
+                )}
+              />
+            </DialogBody>
             <DialogFooter>
               <Button
                 type="button"

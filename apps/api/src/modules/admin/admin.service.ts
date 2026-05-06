@@ -48,6 +48,33 @@ export default class AdminService {
 
   stats = () => this.repository.stats();
 
+  /** Estatísticas ricas com MRR, breakdown de planos, novos usuários 7/30d. */
+  richStats = () => this.repository.richStats();
+
+  /** Detalhe completo de um usuário pra o painel super_admin. */
+  getUserDetails = (userId: string) => this.repository.getUserDetails(userId);
+
+  /** Detalhe completo de uma org pra o painel super_admin. */
+  getOrganizationDetails = (orgId: string) =>
+    this.repository.getOrganizationDetails(orgId);
+
+  /** Audit logs paginado com filtros — sem restrição de membership. */
+  listAuditLogs = (params: {
+    page: number;
+    limit: number;
+    userId?: string;
+    organizationId?: string;
+    resource?: string;
+    action?: string;
+    dateFrom?: Date;
+    dateTo?: Date;
+  }) => this.repository.listAuditLogs(params);
+
+  getAuditFilterOptions = (scope: {
+    userId?: string;
+    organizationId?: string;
+  }) => this.repository.getAuditFilterOptions(scope);
+
   // ── Bans ──────────────────────────────────────────────────────────────────
   async banUser(
     input: {

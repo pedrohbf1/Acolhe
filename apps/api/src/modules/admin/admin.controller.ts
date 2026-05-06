@@ -143,6 +143,11 @@ export const adminController = new Elysia({
     async ({ status }) => status(200, await service.stats()),
     { superAdmin: true },
   )
+  .get(
+    "/stats/rich",
+    async ({ status }) => status(200, await service.richStats()),
+    { superAdmin: true },
+  )
   // ─── Users ─────────────────────────────────────────────────────────────────
   .get(
     "/users",
@@ -159,6 +164,15 @@ export const adminController = new Elysia({
       );
     },
     { superAdmin: true, query: z.object({ page: z.string().optional(), limit: z.string().optional(), search: z.string().optional() }) },
+  )
+  .get(
+    "/users/:id",
+    async ({ status, params }) => {
+      const detail = await service.getUserDetails(params.id);
+      if (!detail) return status(404, { error: "Usuário não encontrado" });
+      return status(200, detail);
+    },
+    { superAdmin: true },
   )
   .post(
     "/users/:id/ban",
@@ -217,6 +231,15 @@ export const adminController = new Elysia({
       );
     },
     { superAdmin: true, query: z.object({ page: z.string().optional(), limit: z.string().optional(), search: z.string().optional() }) },
+  )
+  .get(
+    "/organizations/:id",
+    async ({ status, params }) => {
+      const detail = await service.getOrganizationDetails(params.id);
+      if (!detail) return status(404, { error: "Organização não encontrada" });
+      return status(200, detail);
+    },
+    { superAdmin: true },
   )
   .post(
     "/organizations/:id/ban",
@@ -290,6 +313,66 @@ export const adminController = new Elysia({
       }
     },
     { superAdmin: true },
+  )
+  // ─── Audit Logs ────────────────────────────────────────────────────────────
+  .get(
+    "/audit-logs",
+    async ({ status, query }) => {
+      const page = Number(query.page ?? 1);
+      const limit = Math.min(100, Number(query.limit ?? 50));
+      const dateFrom = query.dateFrom ? new Date(query.dateFrom) : undefined;
+      const dateTo = query.dateTo
+        ? (() => {
+            const d = new Date(query.dateTo);
+            d.setHours(23, 59, 59, 999);
+            return d;
+          })()
+        : undefined;
+      return status(
+        200,
+        await service.listAuditLogs({
+          page,
+          limit,
+          userId: query.userId ?? undefined,
+          organizationId: query.organizationId ?? undefined,
+          resource: query.resource ?? undefined,
+          action: query.action ?? undefined,
+          dateFrom,
+          dateTo,
+        }),
+      );
+    },
+    {
+      superAdmin: true,
+      query: z.object({
+        page: z.string().optional(),
+        limit: z.string().optional(),
+        userId: z.string().optional(),
+        organizationId: z.string().optional(),
+        resource: z.string().optional(),
+        action: z.string().optional(),
+        dateFrom: z.string().optional(),
+        dateTo: z.string().optional(),
+      }),
+    },
+  )
+  .get(
+    "/audit-logs/filter-options",
+    async ({ status, query }) =>
+      status(
+        200,
+        await service.getAuditFilterOptions({
+          userId: query.userId ?? undefined,
+          organizationId: query.organizationId ?? undefined,
+        }),
+      ),
+    {
+      superAdmin: true,
+      query: z.object({
+        userId: z.string().optional(),
+        organizationId: z.string().optional(),
+      }),
+    },
   )
   // ─── Feedbacks ─────────────────────────────────────────────────────────────
   .get(

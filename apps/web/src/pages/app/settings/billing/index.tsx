@@ -1,5 +1,10 @@
 import { Button } from "@/components/ui/button";
-import { useBillingSummary, type InvoiceSummary } from "@/hooks/useBillingSummary";
+import { useAuth } from "@/hooks/useAuth";
+import {
+  useBillingSummary,
+  type CustomPlanSummary,
+  type InvoiceSummary,
+} from "@/hooks/useBillingSummary";
 import { authClient } from "@/lib/auth-client";
 import { getPlanDisplay, PLANS_DISPLAY, type PlanName } from "@/lib/plans";
 import { cn } from "@/lib/utils";
@@ -19,6 +24,7 @@ import {
   Loader2,
   Receipt,
   Rocket,
+  ShieldCheck,
   Sparkles,
   Users,
   XCircle,
@@ -52,6 +58,8 @@ const STATUS_LABELS: Record<string, { label: string; color: string }> = {
 export default function BillingSettingsPage() {
   const [params, setParams] = useSearchParams();
   const justSubscribed = params.get("success") === "1";
+  const { user } = useAuth();
+  const isSuperAdmin = user?.role === "super_admin";
 
   const { data, isLoading } = useBillingSummary({
     pollUntilSubscription: justSubscribed,
@@ -71,7 +79,14 @@ export default function BillingSettingsPage() {
   }, [justSubscribed, data?.subscription, setParams, qc]);
 
   const sub = data?.subscription ?? null;
+  const customPlan = data?.customPlan ?? null;
+  const customPlanPaid =
+    !!customPlan &&
+    (customPlan.stripeStatus === "active" ||
+      customPlan.stripeStatus === "trialing");
   const plan = getPlanDisplay(sub?.plan);
+  // Tem alguma forma de cobrança ativa (regular ou custom paga)?
+  const hasActiveBilling = !!sub || customPlanPaid;
 
   const portal = useMutation({
     mutationFn: async () => {
@@ -123,6 +138,42 @@ export default function BillingSettingsPage() {
     );
   }
 
+  // super_admin não tem cobrança — mostra banner explicativo no lugar.
+  if (isSuperAdmin) {
+    return (
+      <div className="flex flex-col gap-6">
+        <div>
+          <h1 className="text-2xl font-semibold tracking-tight">Cobrança</h1>
+          <p className="text-sm text-muted-foreground mt-1">
+            Plano, forma de pagamento e histórico de faturas.
+          </p>
+        </div>
+        <section className="relative overflow-hidden rounded-2xl border-2 border-primary/40 bg-linear-to-br from-primary/10 via-card to-card p-6 sm:p-7">
+          <div className="absolute -top-12 -right-12 size-48 rounded-full bg-primary/15 blur-3xl pointer-events-none" />
+          <div className="relative flex items-center gap-4">
+            <div className="size-12 rounded-2xl bg-primary/15 flex items-center justify-center shrink-0">
+              <ShieldCheck className="size-6 text-primary" />
+            </div>
+            <div className="min-w-0">
+              <div className="text-xs uppercase tracking-wider text-primary font-medium">
+                Super admin
+              </div>
+              <h2 className="text-2xl font-bold tracking-tight">
+                Acesso vitalício, sem cobrança
+              </h2>
+              <p className="text-sm text-muted-foreground mt-1.5 max-w-xl">
+                Como dono do produto, você não tem assinatura nem cartão
+                associado. Todas as features (audit logs, cargos personalizados,
+                organizações ilimitadas, painel mestre) estão liberadas para
+                sempre.
+              </p>
+            </div>
+          </div>
+        </section>
+      </div>
+    );
+  }
+
   // Banner de processamento pós-checkout (webhook ainda não chegou)
   if (justSubscribed && !sub) {
     return <PostCheckoutWaiting />;
@@ -165,6 +216,8 @@ export default function BillingSettingsPage() {
           sub={sub}
           trialDaysLeft={trialDaysLeft}
         />
+      ) : customPlan ? (
+        <CustomPlanHero plan={customPlan} paid={customPlanPaid} />
       ) : (
         <FreePlanHero />
       )}
@@ -217,7 +270,7 @@ export default function BillingSettingsPage() {
       )}
 
       {/* ── Forma de pagamento ──────────────────────────────── */}
-      {sub && (
+      {hasActiveBilling && (
         <section className="rounded-xl border bg-card p-6">
           <header className="flex items-start justify-between gap-4 flex-wrap mb-5">
             <div className="flex items-center gap-3">
@@ -281,7 +334,7 @@ export default function BillingSettingsPage() {
       )}
 
       {/* ── Histórico de faturas ────────────────────────────── */}
-      {sub && data?.invoices && data.invoices.length > 0 && (
+      {hasActiveBilling && data?.invoices && data.invoices.length > 0 && (
         <section className="rounded-xl border bg-card overflow-hidden">
           <header className="p-6 border-b">
             <div className="flex items-center gap-3">
@@ -475,6 +528,90 @@ function StatusBadge({
     <span className="inline-flex items-center gap-1.5 text-xs px-2 py-1 rounded-md bg-muted text-muted-foreground font-medium capitalize">
       {sub.status}
     </span>
+  );
+}
+
+// ─── Hero: plano custom (vinculado pelo super_admin) ────────────────────────
+
+function CustomPlanHero({
+  plan,
+  paid,
+}: {
+  plan: CustomPlanSummary;
+  paid: boolean;
+}) {
+  const features: string[] = [
+    `${plan.maxOrganizations} ${plan.maxOrganizations === 1 ? "organização" : "organizações"}`,
+    `${plan.maxMembers} ${plan.maxMembers === 1 ? "membro" : "membros"} por org`,
+    `${plan.maxPatients.toLocaleString("pt-BR")} pacientes`,
+  ];
+  if (plan.auditLog) features.push("Logs de auditoria (LGPD)");
+  if (plan.customRoles) features.push("Cargos personalizados");
+  features.push("Suporte dedicado");
+
+  return (
+    <section className="relative overflow-hidden rounded-2xl border-2 border-amber-500/40 bg-linear-to-br from-amber-500/10 via-card to-card p-6 sm:p-7">
+      <div className="absolute -top-12 -right-12 size-48 rounded-full bg-amber-500/15 blur-3xl pointer-events-none" />
+
+      <div className="relative flex items-start justify-between gap-4 flex-wrap">
+        <div className="flex items-center gap-4">
+          <div className="size-12 rounded-2xl bg-amber-500/15 flex items-center justify-center">
+            <Sparkles className="size-6 text-amber-600 dark:text-amber-400" />
+          </div>
+          <div>
+            <div className="text-xs uppercase tracking-wider text-amber-700 dark:text-amber-400 font-medium">
+              Plano sob medida
+            </div>
+            <div className="flex items-baseline gap-2 mt-0.5 flex-wrap">
+              <h2 className="text-2xl font-bold tracking-tight">{plan.name}</h2>
+              <span className="text-sm text-muted-foreground">
+                {formatBRLFromReais(plan.monthlyPriceBRL)}/mês
+              </span>
+            </div>
+            <div className="mt-2">
+              {paid ? (
+                <span className="inline-flex items-center gap-1.5 text-xs px-2 py-1 rounded-md bg-emerald-500/15 text-emerald-600 dark:text-emerald-400 font-medium">
+                  <Check className="size-3" />
+                  Assinatura ativa
+                </span>
+              ) : (
+                <span className="inline-flex items-center gap-1.5 text-xs px-2 py-1 rounded-md bg-amber-500/15 text-amber-600 dark:text-amber-400 font-medium">
+                  <Hourglass className="size-3" />
+                  Aguardando pagamento
+                </span>
+              )}
+            </div>
+          </div>
+        </div>
+
+        {!paid && (
+          <Link to="/pricing">
+            <Button className="gap-2 bg-amber-500 hover:bg-amber-600 text-white">
+              Pagar agora
+              <ArrowUpRight className="size-4" />
+            </Button>
+          </Link>
+        )}
+      </div>
+
+      <ul className="relative mt-6 grid gap-2 sm:grid-cols-2">
+        {features.map((f) => (
+          <li
+            key={f}
+            className="text-sm text-muted-foreground flex items-center gap-2"
+          >
+            <Check className="size-3.5 text-amber-600 dark:text-amber-400 shrink-0" />
+            {f}
+          </li>
+        ))}
+      </ul>
+
+      {plan.notes && (
+        <p className="relative mt-4 text-xs text-muted-foreground italic">
+          {plan.notes}
+        </p>
+      )}
+    </section>
   );
 }
 

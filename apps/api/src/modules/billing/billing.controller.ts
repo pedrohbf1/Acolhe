@@ -25,4 +25,23 @@ export const billingController = new Elysia({
       auth: true,
       detail: { summary: "Resumo de billing (sub + invoices + payment method)" },
     },
+  )
+  .get(
+    "/custom-plan/checkout-url",
+    async ({ status, user }) => {
+      try {
+        const url = await service.getCustomPlanCheckoutUrl(user.id);
+        return status(200, { url });
+      } catch (e) {
+        const msg = e instanceof Error ? e.message : "Erro ao buscar URL";
+        return status(500, { error: msg });
+      }
+    },
+    {
+      auth: true,
+      detail: {
+        summary:
+          "URL hosted Stripe pra usuário pagar a primeira invoice de um custom plan ainda não ativo.",
+      },
+    },
   );

@@ -28,14 +28,38 @@ const stripeClient = new Stripe(env.STRIPE_SECRET_KEY, {
  * Plano ativo do usuário.
  *
  * Prioridade:
- *   1. Custom plan (super_admin definiu pra esse cliente)
- *   2. Stripe subscription ativa/trialing
- *   3. Free
+ *   1. super_admin (dono do produto) → tudo liberado, sem cobrança
+ *   2. Custom plan PAGO (super_admin vinculou + cliente pagou a primeira invoice)
+ *   3. Stripe subscription ativa/trialing
+ *   4. Free
  *
- * Custom plans bypassam o Stripe: cobrança é manual, mas os limites valem.
+ * Importante: vincular um custom plan via super_admin NÃO concede os limites
+ * imediatamente — só depois que a sub Stripe entra em `active`/`trialing`.
+ * Antes disso o usuário fica no plano que ele já tinha (sub regular ou free).
  */
 async function getUserActivePlan(userId: string) {
-  // 1. Custom plan tem prioridade (relação 1:1, Stripe sub gerenciada à parte)
+  // 1. super_admin tem acesso irrestrito — não paga, não tem limite, todas as
+  //    features ligadas. Resolve isso ANTES de tudo pra evitar bugs onde um
+  //    super_admin acaba sendo bloqueado por algum gate de plano.
+  const user = await prisma.user.findUnique({
+    where: { id: userId },
+    select: { role: true },
+  });
+  if (user?.role === "super_admin") {
+    return {
+      name: "super_admin" as const,
+      priceId: null,
+      trialDays: 0,
+      limits: {
+        maxOrganizations: Number.MAX_SAFE_INTEGER,
+        maxPatients: Number.MAX_SAFE_INTEGER,
+        maxMembers: Number.MAX_SAFE_INTEGER,
+      },
+      features: { auditLog: true, customRoles: true },
+    };
+  }
+
+  // 2. Custom plan PAGO tem prioridade
   const customPlan = await prisma.customPlan.findUnique({
     where: { userId },
     select: {
@@ -44,10 +68,15 @@ async function getUserActivePlan(userId: string) {
       maxMembers: true,
       auditLog: true,
       customRoles: true,
+      stripeStatus: true,
     },
   });
 
-  if (customPlan) {
+  if (
+    customPlan &&
+    (customPlan.stripeStatus === "active" ||
+      customPlan.stripeStatus === "trialing")
+  ) {
     return {
       name: "custom" as const,
       priceId: null,
@@ -64,7 +93,7 @@ async function getUserActivePlan(userId: string) {
     };
   }
 
-  // 2. Stripe subscription regular
+  // 3. Stripe subscription regular
   const sub = await prisma.subscription.findFirst({
     where: {
       referenceId: userId,
@@ -194,6 +223,7 @@ export const auth = betterAuth({
       organizationHooks: {
         // Enforça maxMembers do plano do owner. Conta members atuais + convites
         // pendentes pra evitar burlar (criar 10 convites num plano de 2 membros).
+        // Usa getUserActivePlan pra respeitar super_admin/custom plan corretamente.
         beforeCreateInvitation: async ({ organization, inviter }) => {
           const owners = await prisma.member.findMany({
             where: {
@@ -204,13 +234,7 @@ export const auth = betterAuth({
           });
           const ownerId = owners[0]?.userId ?? inviter.userId ?? inviter.id;
 
-          const sub = await prisma.subscription.findFirst({
-            where: {
-              referenceId: ownerId,
-              status: { in: ["active", "trialing"] },
-            },
-          });
-          const plan = getPlan(sub?.plan ?? "free");
+          const plan = await getUserActivePlan(ownerId);
 
           const [memberCount, pendingInvites] = await Promise.all([
             prisma.member.count({ where: { organizationId: organization.id } }),

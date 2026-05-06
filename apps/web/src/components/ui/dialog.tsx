@@ -241,6 +241,7 @@ function DialogContent({
 function DialogHeader({ className, ...props }: React.ComponentProps<"div">) {
   return (
     <div
+      data-slot="dialog-header"
       className={cn("flex flex-col gap-1.5 border-b px-6 py-4", className)}
       {...props}
     />
@@ -253,6 +254,7 @@ function DialogHeader({ className, ...props }: React.ComponentProps<"div">) {
 function DialogBody({ className, ...props }: React.ComponentProps<"div">) {
   return (
     <div
+      data-slot="dialog-body"
       className={cn(
         "flex flex-col max-h-[80dvh] overflow-auto gap-4 px-6 py-4",
         className,
@@ -279,6 +281,7 @@ function DialogFooter({
 
   return (
     <div
+      data-slot="dialog-footer"
       className={cn(
         "flex flex-col-reverse gap-2 border-t rounded-b-xl bg-muted/50 px-6 py-4 sm:flex-row sm:justify-end",
         className,
